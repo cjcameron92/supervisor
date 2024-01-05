@@ -98,3 +98,6 @@ gradle-app.setting
 */gradle
 */build
 gradle
+
+*/.DS_Store
+.DS_Store
