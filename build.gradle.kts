@@ -6,6 +6,7 @@ plugins {
 group = "gg.llamas.supervisor"
 version = "1.0"
 
+
 allprojects {
     repositories {
         mavenCentral()

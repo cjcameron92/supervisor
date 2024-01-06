@@ -1,8 +1,8 @@
 package com.cjcameron92.demo.config;
 
-import gg.llama.supervisor.api.Configuration;
-import gg.llama.supervisor.configuration.AbstractConfig;
-import gg.llama.supervisor.yaml.YamlConfigService;
+import gg.supervisor.api.Configuration;
+import gg.supervisor.configuration.AbstractConfig;
+import gg.supervisor.configuration.yaml.YamlConfigService;
 
 import java.util.HashMap;
 import java.util.Map;
