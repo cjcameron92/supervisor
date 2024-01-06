@@ -31,4 +31,18 @@ public class MySQLConfig extends AbstractConfig {
     }};
 }
 ```
+### Output File
+`database.yml` 
+```yaml
+hostName: 0.0.0.0
+port: 3306
+username: admin
+password: l0calhost
+database: admin
+properties:
+  prepStmtCacheSqlLimit: 2048
+  cachePrepStmts: "true"
+  prepStmtCacheSize: 250
+
+```
 This configuration class sets up a MySQL connection with specified host, port, and authentication details. The properties map includes settings to cache prepared statements for improved performance.
