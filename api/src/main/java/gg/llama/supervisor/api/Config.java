@@ -1,10 +1,14 @@
 package gg.llama.supervisor.api;
 
 
+import java.io.File;
+
 public interface Config {
 
-    void save() throws Exception;
+    void save();
 
-    void reload() throws Exception;
+    void reload();
+
+    File getFile();
 
 }

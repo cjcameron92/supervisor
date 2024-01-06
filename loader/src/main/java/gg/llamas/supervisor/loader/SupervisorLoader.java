@@ -18,6 +18,7 @@ public class SupervisorLoader {
 
     public static void register(Object plugin, Object... registeredObjects) {
 
+
         if (plugin instanceof Plugin p) {
             p.getDataFolder().mkdirs();
         }
@@ -68,7 +69,7 @@ public class SupervisorLoader {
                 params[i] = serviceInstance;
             } else if (paramType.isAnnotationPresent(Component.class)) {
                 Object paramInstance = createComponentInstance(paramType, plugin);
-                Services.register(paramType, paramInstance); // Register immediately
+                Services.register(paramType, paramInstance);
                 params[i] = paramInstance;
             } else if (paramType.isAnnotationPresent(Configuration.class)) {
                 Object paramInstance = createComponentInstance(paramType, plugin);
@@ -78,7 +79,7 @@ public class SupervisorLoader {
                 final ConfigService configService = crz.newInstance(plugin);
                 configService.register(paramInstance.getClass(), paramInstance, new File(plugin.getDataFolder(), configuration.fileName()));
                 Bukkit.getLogger().info("Registered configuration for file " + configuration.fileName());
-                Services.register(paramType, paramInstance); // Register immediately
+                Services.register(paramType, paramInstance);
                 params[i] = paramInstance;
             } else {
                 throw new Exception("No component found for required type: " + paramType.getName());
