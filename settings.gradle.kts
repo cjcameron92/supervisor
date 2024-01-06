@@ -1,2 +1,2 @@
 rootProject.name = "Supervisor"
-include("api", "loader", "configuration", "yaml-configuration", "storage")
+include("api", "loader", "configuration", "yaml-configuration", "storage", "demo")
