@@ -1,14 +1,15 @@
 package com.cjcameron92.demo.database;
 
 import com.cjcameron92.demo.config.MySQLConfig;
-import gg.llama.supervisor.api.Component;
+import com.cjcameron92.demo.storage.DemoStorage;
+import gg.supervisor.api.Component;
 
 @Component
 public class MySQLDatabase {
 
     private final MySQLConfig config;
 
-    public MySQLDatabase(MySQLConfig config) {
+    public MySQLDatabase(MySQLConfig config, DemoStorage demoStorage) {
         this.config = config;
 
         // TODO: 2024-01-05
