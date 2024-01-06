@@ -39,9 +39,9 @@ public class SupervisorLoader {
 
         for (Class<?> clazz : allClasses) {
             try {
+                System.out.println(clazz.getName());
                if ((clazz.isAnnotationPresent(Configuration.class) || clazz.isAnnotationPresent(Component.class))) {
                     final Object instance = createComponentInstance(clazz, (Plugin) plugin);
-
                     if (instance instanceof Listener) {
                         Bukkit.getPluginManager().registerEvents((Listener) instance, (Plugin) plugin);
                     }

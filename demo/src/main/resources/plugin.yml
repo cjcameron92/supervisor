@@ -1,0 +1,4 @@
+main: com.cjcameron92.demo.DemoPlugin
+version: 1.0
+name: Demo
+api-version: 1.19
