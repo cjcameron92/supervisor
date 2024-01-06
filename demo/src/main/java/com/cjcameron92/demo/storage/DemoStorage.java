@@ -11,7 +11,5 @@ public class DemoStorage extends JsonStorageRegistry<Double> {
 
     public DemoStorage(Plugin plugin) {
         super(Double.class, new File(plugin.getDataFolder(), "storage"));
-        put("demo", 50d);
-        save();
     }
 }
