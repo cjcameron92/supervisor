@@ -5,7 +5,7 @@ dependencies {
 }
 
 tasks.shadowJar {
-    archiveBaseName.set("supervisor-bundle.jar")
+    archiveBaseName.set("supervisor-bundle")
     archiveClassifier.set(null as String?)
     archiveVersion.set("1.0")
 }
