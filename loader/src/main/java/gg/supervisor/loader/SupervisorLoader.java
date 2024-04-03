@@ -21,11 +21,9 @@ public class SupervisorLoader {
 
     public static void register(Object plugin, Object... registeredObjects) {
 
-
         if (plugin instanceof Plugin p) {
             p.getDataFolder().mkdirs();
         }
-
         for (Object o : registeredObjects)
             Services.register(o.getClass(), o);
 
@@ -43,13 +41,13 @@ public class SupervisorLoader {
 
         for (Class<?> clazz : allClasses) {
             try {
-                System.out.println(clazz.getName());
-               if ((clazz.isAnnotationPresent(Configuration.class) || clazz.isAnnotationPresent(Component.class))) {
+                if ((clazz.isAnnotationPresent(Configuration.class) || clazz.isAnnotationPresent(Component.class))) {
+
                     final Object instance = createComponentInstance(clazz, (Plugin) plugin);
                     if (instance instanceof Listener) {
                         Bukkit.getPluginManager().registerEvents((Listener) instance, (Plugin) plugin);
                     }
-                   Services.register(clazz, instance);
+                    Services.register(clazz, instance);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -64,6 +62,11 @@ public class SupervisorLoader {
         final Class<?>[] paramTypes = constructor.getParameterTypes();
         final Object[] params = new Object[paramTypes.length];
 
+        Object mainInstance = Services.loadIfPresent(clazz);
+
+        if (mainInstance != null)
+            return mainInstance;
+        
         for (int i = 0; i < paramTypes.length; i++) {
             final Class<?> paramType = paramTypes[i];
             Object serviceInstance = Services.loadIfPresent(paramType);
@@ -74,6 +77,7 @@ public class SupervisorLoader {
                 Object paramInstance = createComponentInstance(paramType, plugin);
                 Services.register(paramType, paramInstance);
                 params[i] = paramInstance;
+
             } else if (paramType.isAnnotationPresent(Configuration.class)) {
                 Object paramInstance = createComponentInstance(paramType, plugin);
                 final Configuration configuration = paramInstance.getClass().getAnnotation(Configuration.class);
@@ -91,4 +95,5 @@ public class SupervisorLoader {
 
         return constructor.newInstance(params);
     }
+
 }
