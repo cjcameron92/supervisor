@@ -83,10 +83,8 @@ public abstract class AbstractConfigService implements ConfigService {
         }
 
         if (predicate.test(file)) {
-            System.out.println("passed");
             return function.apply(file, clazz);
         } else {
-            System.out.println("failed");
             return null;
         }
     }

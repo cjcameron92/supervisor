@@ -1,6 +1,7 @@
 plugins {
     java
     id("com.github.johnrengelman.shadow") version "8.1.1"
+    `maven-publish`
 }
 
 group = "gg.llamas.supervisor"
@@ -14,7 +15,11 @@ allprojects {
         maven("https://repo.papermc.io/repository/maven-public/")
         maven("https://repo.aikar.co/content/groups/aikar/")
     }
+
 }
+
+val projectsToPublish = listOf("api", "loader", "yaml-configuration")
+
 
 subprojects {
     apply(plugin = "java")
@@ -25,11 +30,31 @@ subprojects {
         compileOnly("io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT")
     }
 
-    configure<PublishingExtension> {
+
+
+    publishing {
         publications {
             create<MavenPublication>("mavenJava") {
-                from(components["java"])
+                // Use either shadowJar or jar for the artifact, depending on your project's requirements
+                val shadowJarTask = tasks.findByName("shadowJar") as? com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+                if (shadowJarTask != null) {
+                    artifact(shadowJarTask.archiveFile.get().asFile) {
+                        classifier = null
+                    }
+                } else {
+                    from(components["java"])
+                }
+
+                // Set the groupId, version, and artifactId dynamically
+                groupId = project.group.toString()
+                // Use the project directory's name for the artifactId
+                artifactId = project.name
+                version = project.version.toString()
+
+                // Optional: Print out the artifact details for confirmation
+                println("Configuring publication for ${project.name} with artifactId ${project.name}")
             }
         }
     }
+
 }

@@ -15,29 +15,39 @@ import org.reflections.util.ConfigurationBuilder;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class SupervisorLoader {
 
 
     public static void register(Object plugin, Object... registeredObjects) {
-
+        System.out.println("called frmo " + plugin.toString());
         if (plugin instanceof Plugin p) {
             p.getDataFolder().mkdirs();
         }
+
         for (Object o : registeredObjects)
             Services.register(o.getClass(), o);
 
         Services.register(plugin.getClass(), plugin);
-        Services.register(Plugin.class, plugin);
 
         final String pluginPackageName = plugin.getClass().getPackage().getName();
+        final ClassLoader pluginClassLoader = plugin.getClass().getClassLoader();
+        System.out.println(pluginPackageName);
 
         final Reflections reflections = new Reflections(new ConfigurationBuilder()
-                .setUrls(ClasspathHelper.forPackage(pluginPackageName))
+                .setUrls(ClasspathHelper.forPackage(pluginPackageName, pluginClassLoader))
                 .setScanners(new SubTypesScanner(false)));
 
-        final Set<Class<?>> allClasses = reflections.getSubTypesOf(Object.class);
-        allClasses.removeIf(clazz -> !clazz.getPackage().getName().startsWith(pluginPackageName));
+
+        final Set<Class<?>> allClasses = reflections.getAll(new SubTypesScanner(false)).stream().filter(x -> x.startsWith(pluginPackageName)).map(x -> {
+            try {
+                return Class.forName(x);
+            } catch (ClassNotFoundException e) {
+                System.out.println("Could not find class " + x);
+                return null;
+            }
+        }).collect(Collectors.toSet());
 
         for (Class<?> clazz : allClasses) {
             try {

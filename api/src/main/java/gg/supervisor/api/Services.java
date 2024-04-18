@@ -14,4 +14,8 @@ public class Services {
     public static <T> T loadIfPresent(Class<T> clazz) {
         return (T) registeredServices.get(clazz);
     }
+
+    public static Map<Class<?>, Object> getRegisteredServices() {
+        return registeredServices;
+    }
 }
