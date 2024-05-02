@@ -94,3 +94,10 @@ git clone https://github.com/cjcameron92/supervisor.git
 ```
 ## Support and Contributions
 For support, join our Discord or consult the Wiki for troubleshooting tips. Contributions to the project are always welcome!
+
+
+## Contributors 
+[Hadi Mafhouz](https://github.com/Hadimhz)  
+[Cameron Carvalho](https://github.com/cjcameron92)
+
+
