@@ -94,7 +94,7 @@ git clone https://github.com/cjcameron92/supervisor.git
 ./gradlew shadowJar
 ```
 
-## Example (ClearChat Plugin)
+## Example
 ```java
 package com.cjcameron92.clearchat;
 
