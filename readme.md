@@ -16,6 +16,7 @@ Inspired by Spring Boot, the Supervisor Framework is designed to be both expanda
   - [Gradle Setup](#gradle-setup)
     - [Groovy](#groovy)
     - [Kotlin DSL](#kotlin-dsl)
+- [Example](#example)
 
 ## Downloads
 
@@ -92,6 +93,74 @@ git clone https://github.com/cjcameron92/supervisor.git
 ./setup.sh
 ./gradlew shadowJar
 ```
+
+## Example (ClearChat Plugin)
+```java
+package com.cjcameron92.clearchat;
+
+import co.aikar.commands.PaperCommandManager;
+import gg.supervisor.loader.SupervisorLoader;
+import org.bukkit.plugin.java.JavaPlugin;
+
+public class ClearChatPlugin extends JavaPlugin {
+
+    @Override
+    public void onEnable() {
+        SupervisorLoader.register(this, new PaperCommandManager(this));
+    }
+}
+```
+```java
+package com.cjcameron92.clearchat.config;
+
+import gg.supervisor.api.Configuration;
+import gg.supervisor.configuration.yaml.YamlConfigService;
+
+@Configuration(fileName = "config.yml", service = YamlConfigService.class)
+public class ClearChatConfig {
+
+    public String permissionRequired = "clearchat.use";
+    public String deniedPermissionMessage = "&cYou do not have permission to use this command.";
+    public String chatClearedMessage = "&e(!) Chat has been cleared by %player%.";
+}
+```
+```java
+package com.cjcameron92.clearchat.command;
+
+import co.aikar.commands.BaseCommand;
+import co.aikar.commands.PaperCommandManager;
+import co.aikar.commands.annotation.CommandAlias;
+import co.aikar.commands.annotation.Default;
+import com.cjcameron92.clearchat.config.ClearChatConfig;
+import gg.supervisor.api.util.Text;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+
+@CommandAlias("clearchat:cc")
+public class ClearChatCommand extends BaseCommand {
+
+    private final ClearChatConfig clearChatConfig;
+
+    public ClearChatCommand(PaperCommandManager commandManager, ClearChatConfig clearChatConfig) {
+        commandManager.registerCommand(this);
+        this.clearChatConfig = clearChatConfig;
+    }
+
+    @Default
+    public void onChatCleared(CommandSender sender) {
+        if (!sender.hasPermission(clearChatConfig.permissionRequired)) {
+            sender.sendMessage(Text.translate(clearChatConfig.deniedPermissionMessage));
+            return;
+        }
+
+        for (int i = 0; i < 50; i++)
+            Bukkit.broadcast(Text.translate("\n"));
+
+        Bukkit.broadcast(Text.translate(clearChatConfig.chatClearedMessage.replaceAll("%player%", sender.getName())));
+    }
+}
+```
+
 ## Support and Contributions
 For support, join our Discord or consult the Wiki for troubleshooting tips. Contributions to the project are always welcome!
 
