@@ -2,11 +2,11 @@ package gg.supervisor.mongo;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.ReplaceOptions;
-import gg.supervisor.storage.PlayerStorage;
-import gg.supervisor.storage.PlayerStorageCache;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -21,10 +21,11 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static com.mongodb.client.model.Filters.eq;
-import static gg.supervisor.storage.json.JsonStorage.GSON;
 
 @Deprecated
-public class MongoPlayerStorage<T> implements PlayerStorage<T>, PlayerStorageCache<T>, Listener {
+public class MongoPlayerStorage<T> implements Listener {
+
+    private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
 
     private final Cache<UUID, T> mongoCache = CacheBuilder.newBuilder().build();
     private final Plugin plugin;
@@ -54,7 +55,7 @@ public class MongoPlayerStorage<T> implements PlayerStorage<T>, PlayerStorageCac
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
-    @Override
+
     public T getPlayer(UUID uuid) {
         final Document document = collection.find(eq("_id", uuid.toString())).first();
         if (document != null) {
@@ -69,7 +70,6 @@ public class MongoPlayerStorage<T> implements PlayerStorage<T>, PlayerStorageCac
         return null;
     }
 
-    @Override
     public void savePlayer(UUID uuid) {
         T type = mongoCache.getIfPresent(uuid);
         if (type == null) {
@@ -88,13 +88,12 @@ public class MongoPlayerStorage<T> implements PlayerStorage<T>, PlayerStorageCac
         }
     }
 
-    @Override
     public void update(UUID uuid, T type) {
         mongoCache.put(uuid, type);
         savePlayer(uuid);
     }
 
-    @Override
+
     public void update(UUID uuid, Consumer<T> consumer) {
         T type = getPlayer(uuid);
         if (type != null) {
@@ -103,7 +102,6 @@ public class MongoPlayerStorage<T> implements PlayerStorage<T>, PlayerStorageCac
         }
     }
 
-    @Override
     public T getFromCache(UUID uuid) {
         return this.mongoCache.getIfPresent(uuid);
     }

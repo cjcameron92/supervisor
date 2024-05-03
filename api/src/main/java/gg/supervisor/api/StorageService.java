@@ -1,2 +1,6 @@
-package gg.supervisor.api;public interface StorageService {
+package gg.supervisor.api;
+
+public interface StorageService {
+
+    Object loadService(Class<?> clazz);
 }

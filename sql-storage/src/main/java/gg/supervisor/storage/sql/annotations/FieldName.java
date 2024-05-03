@@ -1,2 +1,12 @@
-package gg.supervisor.storage.sql.annotations;public @interface FieldName {
+package gg.supervisor.storage.sql.annotations;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface FieldName {
+    String value();
 }

@@ -1,15 +1,14 @@
-package gg.supervisor.storage.sql.test;
+package gg.supervisor.storage.sql;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 public interface SQLStorage<T> {
 
-    CompletableFuture<Void> save(T type);
+    void save(T type);
 
-    CompletableFuture<Void> delete(String key);
+    void delete(String key);
 
-    CompletableFuture<T> find(String key);
+    T find(String key);
 
-    CompletableFuture<List<T>> findAll();
+    List<T> findAll();
 }

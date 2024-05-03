@@ -1,4 +1,4 @@
-package gg.supervisor.api.template;
+package gg.supervisor.storage.sql.config;
 
 import java.util.HashMap;
 import java.util.Map;
