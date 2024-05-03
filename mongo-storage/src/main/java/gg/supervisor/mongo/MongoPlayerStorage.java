@@ -23,6 +23,7 @@ import java.util.function.Function;
 import static com.mongodb.client.model.Filters.eq;
 import static gg.supervisor.storage.json.JsonStorage.GSON;
 
+@Deprecated
 public class MongoPlayerStorage<T> implements PlayerStorage<T>, PlayerStorageCache<T>, Listener {
 
     private final Cache<UUID, T> mongoCache = CacheBuilder.newBuilder().build();

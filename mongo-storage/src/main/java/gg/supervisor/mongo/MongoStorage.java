@@ -10,6 +10,7 @@ import org.bukkit.Bukkit;
 import static com.mongodb.client.model.Filters.eq;
 import static gg.supervisor.storage.json.JsonStorage.GSON;
 
+@Deprecated
 public class MongoStorage<T> implements Storage<T> {
 
     private final String identifier;

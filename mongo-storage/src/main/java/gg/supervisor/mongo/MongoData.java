@@ -5,6 +5,7 @@ import com.mongodb.client.MongoClients;
 
 import java.io.Closeable;
 
+@Deprecated
 public class MongoData implements Closeable {
 
     private final MongoClient mongoClient;
