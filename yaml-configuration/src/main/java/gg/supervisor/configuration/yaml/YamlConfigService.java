@@ -1,9 +1,12 @@
 package gg.supervisor.configuration.yaml;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import gg.supervisor.api.Component;
@@ -24,10 +27,12 @@ public class YamlConfigService extends AbstractConfigService {
             .disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER))
             .configure(MapperFeature.PROPAGATE_TRANSIENT_MARKER, true)
             .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-            .configure(JsonParser.Feature.AUTO_CLOSE_SOURCE, true);
+            .configure(JsonParser.Feature.AUTO_CLOSE_SOURCE, true)
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));;
 
     public YamlConfigService(Plugin plugin) {
-        super(plugin);
+        super();
     }
 
     @Override

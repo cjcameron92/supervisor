@@ -3,10 +3,10 @@ package gg.supervisor.configuration;
 import gg.supervisor.api.Config;
 import gg.supervisor.api.ConfigService;
 import gg.supervisor.configuration.exception.ConfigNotRegisteredException;
-import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
@@ -14,18 +14,17 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public abstract class AbstractConfigService implements ConfigService {
 
     protected final Map<Class<?>, Object> loadedConfigs = new ConcurrentHashMap<>();
+    private static final Logger LOGGER = Logger.getLogger(AbstractConfigService.class.getName());
 
-    private final Plugin plugin;
+    public AbstractConfigService() {}
 
-    public AbstractConfigService(Plugin plugin) {
-        this.plugin = plugin;
-    }
-
-    protected  void registerData(Class<?> clazz, Object type, File file) {
+    protected void registerData(Class<?> clazz, Object type) {
         this.loadedConfigs.put(clazz, type);
     }
 
@@ -33,14 +32,14 @@ public abstract class AbstractConfigService implements ConfigService {
     public Object register(Class<?> clazz, Object instance, File file) {
         if (!file.exists()) {
             try {
-                file.createNewFile();
+                Files.createFile(file.toPath());
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE, "Error creating file: " + file.getPath(), e);
+                return null;  // Return early if file creation fails
             }
         }
 
-        registerData(clazz, instance, file);
-
+        registerData(clazz, instance);
         reload(clazz, instance, file);
         save(instance, file);
 
@@ -49,17 +48,17 @@ public abstract class AbstractConfigService implements ConfigService {
 
     protected void trySave(Object obj, File file, Predicate<File> predicate, BiConsumer<Object, File> consumer) {
         try {
-            if (!file.createNewFile()) {
-                file.delete();
-                file.createNewFile();
+            if (file.exists()) {
+                Files.delete(file.toPath());
             }
+            Files.createFile(file.toPath());
 
             if (predicate.test(file)) {
                 consumer.accept(obj, file);
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error saving file: " + file.getPath(), e);
         }
     }
 
@@ -68,17 +67,20 @@ public abstract class AbstractConfigService implements ConfigService {
         if (this.loadedConfigs.containsKey(obj.getClass())) {
             final Config config = (Config) this.loadedConfigs.get(obj.getClass());
             if (config != null) {
-//                save(obj, config.getFile());
+                save(obj, config.getFile());
             }
-        } else throw new ConfigNotRegisteredException();
+        } else {
+            throw new ConfigNotRegisteredException("Config not registered for class: " + obj.getClass().getName());
+        }
     }
 
     protected <Type> Type tryLoad(Class<Type> clazz, File file, Predicate<File> predicate, BiFunction<File, Class<Type>, Type> function) {
         if (!file.exists()) {
             try {
-                file.createNewFile();
+                Files.createFile(file.toPath());
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE, "Error creating file: " + file.getPath(), e);
+                return null;
             }
         }
 
@@ -89,24 +91,21 @@ public abstract class AbstractConfigService implements ConfigService {
         }
     }
 
-
     @Override
     public <Type> Optional<Type> load(Class<Type> clazz) {
         if (this.loadedConfigs.containsKey(clazz)) {
-
             final Config configuration = (Config) this.loadedConfigs.get(clazz);
             if (configuration != null) {
-                return null;
-//                return load(clazz, configuration.getFile());
+                return load(clazz, configuration.getFile());
             }
         }
-        throw new ConfigNotRegisteredException();
+
+        throw new ConfigNotRegisteredException("Config not registered for class: " + clazz.getName());
     }
 
     @Override
     public Collection<Object> getConfigs() {
         return this.loadedConfigs.values();
     }
-
 
 }
