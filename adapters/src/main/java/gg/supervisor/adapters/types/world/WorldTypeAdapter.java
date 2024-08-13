@@ -1,4 +1,4 @@
-package gg.supervisor.adapters.world;
+package gg.supervisor.adapters.types.world;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.JsonParseException;

@@ -1,8 +1,8 @@
-package gg.supervisor.repository;
+package gg.supervisor.adapters.handler;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import gg.supervisor.repository.adapter.GeneralTypeAdapterFactory;
+import gg.supervisor.adapters.factory.GeneralTypeAdapterFactory;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
@@ -15,6 +15,7 @@ public abstract class AbstractProxyHandler<T> implements ProxyHandler<T> {
             .setPrettyPrinting()
             .registerTypeAdapterFactory(new GeneralTypeAdapterFactory())
             .create();
+
     protected final Class<T> serviceInterface;
     protected final Type entityType;
 

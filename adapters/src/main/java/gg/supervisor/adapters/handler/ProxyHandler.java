@@ -1,4 +1,4 @@
-package gg.supervisor.repository;
+package gg.supervisor.adapters.handler;
 
 import java.lang.reflect.InvocationHandler;
 

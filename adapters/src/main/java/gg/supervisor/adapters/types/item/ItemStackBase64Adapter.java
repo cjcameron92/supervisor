@@ -1,4 +1,4 @@
-package gg.supervisor.adapters.item;
+package gg.supervisor.adapters.types.item;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;

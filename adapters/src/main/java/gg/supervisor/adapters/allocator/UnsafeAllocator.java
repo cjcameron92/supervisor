@@ -1,4 +1,4 @@
-package gg.supervisor.repository.util;
+package gg.supervisor.adapters.allocator;
 
 import sun.misc.Unsafe;
 

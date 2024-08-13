@@ -1,4 +1,4 @@
-package gg.supervisor.adapters.world;
+package gg.supervisor.adapters.types.world;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.JsonParseException;
@@ -6,32 +6,30 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import gg.supervisor.api.Adapter;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
+import org.bukkit.Chunk;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 
 import java.io.IOException;
 
 @Adapter
-public class BlockTypeAdapter extends TypeAdapter<Block> {
+public class ChunkTypeAdapter extends TypeAdapter<Chunk> {
 
     @Override
-    public void write(JsonWriter out, Block block) throws IOException {
-        if (block == null) {
+    public void write(JsonWriter out, Chunk chunk) throws IOException {
+        if (chunk == null) {
             out.nullValue();
             return;
         }
 
         out.beginObject();
-        out.name("world").value(block.getWorld().getName());
-        out.name("x").value(block.getX());
-        out.name("y").value(block.getY());
-        out.name("z").value(block.getZ());
+        out.name("world").value(chunk.getWorld().getName());
+        out.name("x").value(chunk.getX());
+        out.name("z").value(chunk.getZ());
         out.endObject();
     }
 
     @Override
-    public Block read(JsonReader in) throws IOException {
+    public Chunk read(JsonReader in) throws IOException {
         if (in.peek().name().equals("NULL")) {
             in.nextNull();
             return null;
@@ -39,7 +37,7 @@ public class BlockTypeAdapter extends TypeAdapter<Block> {
 
         in.beginObject();
         String worldName = null;
-        int x = 0, y = 0, z = 0;
+        int x = 0, z = 0;
 
         while (in.hasNext()) {
             switch (in.nextName()) {
@@ -48,9 +46,6 @@ public class BlockTypeAdapter extends TypeAdapter<Block> {
                     break;
                 case "x":
                     x = in.nextInt();
-                    break;
-                case "y":
-                    y = in.nextInt();
                     break;
                 case "z":
                     z = in.nextInt();
@@ -63,6 +58,6 @@ public class BlockTypeAdapter extends TypeAdapter<Block> {
         if (world == null) {
             throw new JsonParseException("Unknown world: " + worldName);
         }
-        return world.getBlockAt(x, y, z);
+        return world.getChunkAt(x, z);
     }
 }
