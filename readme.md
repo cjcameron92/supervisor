@@ -95,25 +95,26 @@ git clone https://github.com/cjcameron92/supervisor.git
 ```
 
 ## Example
+
 ```java
 package com.cjcameron92.clearchat;
 
 import co.aikar.commands.PaperCommandManager;
-import gg.supervisor.loader.SupervisorLoader;
+import gg.supervisor.core.loader.SupervisorLoader;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class ClearChatPlugin extends JavaPlugin {
 
-    @Override
-    public void onEnable() {
-        SupervisorLoader.register(this, new PaperCommandManager(this));
-    }
+  @Override
+  public void onEnable() {
+    SupervisorLoader.register(this, new PaperCommandManager(this));
+  }
 }
 ```
 ```java
 package com.cjcameron92.clearchat.config;
 
-import gg.supervisor.api.Configuration;
+import gg.supervisor.core.annotation.Configuration;
 import gg.supervisor.configuration.yaml.YamlConfigService;
 
 @Configuration(fileName = "config.yml", service = YamlConfigService.class)
@@ -132,7 +133,7 @@ import co.aikar.commands.PaperCommandManager;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.Default;
 import com.cjcameron92.clearchat.config.ClearChatConfig;
-import gg.supervisor.api.util.Text;
+import gg.supervisor.core.util.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 

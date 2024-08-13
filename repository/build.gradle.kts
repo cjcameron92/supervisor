@@ -8,7 +8,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly(project(":api"))
+    compileOnly(project(":core"))
     implementation(project(":adapters"))
 }
 

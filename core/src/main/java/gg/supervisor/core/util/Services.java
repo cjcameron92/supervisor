@@ -1,4 +1,4 @@
-package gg.supervisor.api;
+package gg.supervisor.core.util;
 
 import java.util.HashMap;
 import java.util.Map;

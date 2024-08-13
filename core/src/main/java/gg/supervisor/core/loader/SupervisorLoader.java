@@ -1,6 +1,9 @@
-package gg.supervisor.loader;
+package gg.supervisor.core.loader;
 
-import gg.supervisor.api.*;
+import gg.supervisor.core.annotation.Component;
+import gg.supervisor.core.annotation.Configuration;
+import gg.supervisor.core.config.ConfigService;
+import gg.supervisor.core.util.Services;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
@@ -11,7 +14,6 @@ import org.reflections.util.ConfigurationBuilder;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 

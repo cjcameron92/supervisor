@@ -1,8 +1,8 @@
 package gg.supervisor.configuration;
 
-import gg.supervisor.api.Config;
-import gg.supervisor.api.ConfigService;
 import gg.supervisor.configuration.exception.ConfigNotRegisteredException;
+import gg.supervisor.core.config.Config;
+import gg.supervisor.core.config.ConfigService;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package gg.supervisor.api.util;
+package gg.supervisor.core.util;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;

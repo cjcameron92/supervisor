@@ -1,9 +1,9 @@
 package gg.supervisor.configuration;
 
-import gg.supervisor.api.Config;
-import gg.supervisor.api.ConfigService;
-import gg.supervisor.api.Configuration;
-import gg.supervisor.api.Services;
+import gg.supervisor.core.annotation.Configuration;
+import gg.supervisor.core.config.Config;
+import gg.supervisor.core.config.ConfigService;
+import gg.supervisor.core.util.Services;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;

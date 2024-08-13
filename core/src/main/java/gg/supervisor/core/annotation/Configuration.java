@@ -1,4 +1,6 @@
-package gg.supervisor.api;
+package gg.supervisor.core.annotation;
+
+import gg.supervisor.core.config.ConfigService;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

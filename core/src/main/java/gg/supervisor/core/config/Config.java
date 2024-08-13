@@ -1,4 +1,4 @@
-package gg.supervisor.api;
+package gg.supervisor.core.config;
 
 
 import java.io.File;

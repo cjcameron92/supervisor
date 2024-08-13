@@ -1,4 +1,8 @@
 rootProject.name = "supervisor"
-include("api", "loader", "configuration", "yaml-configuration", "redis-repository")
+include( "redis-repository")
 include("repository")
 include("adapters")
+include("core")
+include("configuration")
+include("yaml-configuration")
+include("redis-repository")
