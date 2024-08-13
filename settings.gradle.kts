@@ -1,4 +1,4 @@
 rootProject.name = "supervisor"
-include("api", "loader", "configuration", "yaml-configuration", "storage","items","menu", "demo", "bundle", "redis-repository")
-include("mongo-repository")
+include("api", "loader", "configuration", "yaml-configuration", "redis-repository")
 include("repository")
+include("adapters")

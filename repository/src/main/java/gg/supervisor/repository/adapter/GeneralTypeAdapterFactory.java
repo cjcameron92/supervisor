@@ -1,9 +1,6 @@
 package gg.supervisor.repository.adapter;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonIOException;
-import com.google.gson.TypeAdapter;
-import com.google.gson.TypeAdapterFactory;
+import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -16,13 +13,28 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GeneralTypeAdapterFactory implements TypeAdapterFactory {
+
+    private final Map<Class<?>, TypeAdapter<?>> customAdapters = new HashMap<>();
+
     @Override
     public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken) {
         Class<?> rawType = typeToken.getRawType();
+
+        // Check if a custom adapter is registered for this type
+        TypeAdapter<?> customAdapter = customAdapters.get(rawType);
+        if (customAdapter != null) {
+            return (TypeAdapter<T>) customAdapter;
+        }
+
         if (rawType.isInterface() || rawType.equals(Object.class) || rawType.getPackage().getName().startsWith("java.")) {
             return null; // Skip Gson's default handling for interfaces and core Java classes
         }
+
         return new GeneralTypeAdapter<>(gson, typeToken);
+    }
+
+    public <T> void registerCustomAdapter(Class<T> type, TypeAdapter<T> adapter) {
+        customAdapters.put(type, adapter);
     }
 
     private static class GeneralTypeAdapter<T> extends TypeAdapter<T> {

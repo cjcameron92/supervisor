@@ -1,9 +1,6 @@
 package gg.supervisor.loader;
 
-import gg.supervisor.api.Component;
-import gg.supervisor.api.ConfigService;
-import gg.supervisor.api.Configuration;
-import gg.supervisor.api.Services;
+import gg.supervisor.api.*;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
@@ -14,6 +11,7 @@ import org.reflections.util.ConfigurationBuilder;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -21,7 +19,6 @@ public class SupervisorLoader {
 
 
     public static void register(Object plugin, Object... registeredObjects) {
-        System.out.println("called frmo " + plugin.toString());
         if (plugin instanceof Plugin p) {
             p.getDataFolder().mkdirs();
         }
@@ -44,7 +41,7 @@ public class SupervisorLoader {
             try {
                 return Class.forName(x);
             } catch (ClassNotFoundException e) {
-                System.out.println("Could not find class " + x);
+                e.printStackTrace();
                 return null;
             }
         }).collect(Collectors.toSet());

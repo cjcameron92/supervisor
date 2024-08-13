@@ -17,6 +17,7 @@ public class RedisProxyHandler<T> extends AbstractProxyHandler<T> {
         super(serviceInterface);
         this.redis = redis;
     }
+
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         try (Jedis jedis = redis.getResource()) {
