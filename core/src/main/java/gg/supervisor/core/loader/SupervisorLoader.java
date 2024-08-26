@@ -15,7 +15,9 @@ import org.reflections.util.ConfigurationBuilder;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
-import java.util.Set;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class SupervisorLoader {
@@ -33,21 +35,26 @@ public class SupervisorLoader {
 
         final String pluginPackageName = plugin.getClass().getPackage().getName();
         final ClassLoader pluginClassLoader = plugin.getClass().getClassLoader();
-        System.out.println(pluginPackageName);
 
         final Reflections reflections = new Reflections(new ConfigurationBuilder()
                 .setUrls(ClasspathHelper.forPackage(pluginPackageName, pluginClassLoader))
                 .setScanners(new SubTypesScanner(false)));
 
 
-        final Set<Class<?>> allClasses = reflections.getAll(new SubTypesScanner(false)).stream().filter(x -> x.startsWith(pluginPackageName)).map(x -> {
+        final List<Class<?>> allClasses = reflections.getAll(new SubTypesScanner(false)).stream().filter(x -> x.startsWith(pluginPackageName)).map(x -> {
             try {
-                return Class.forName(x);
+                Class<?> clazz = Class.forName(x);
+
+                if (!clazz.isAnnotationPresent(Component.class))
+                    return null;
+
+                return clazz;
+
             } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+                System.out.println("Couldn't locate class with the name " + x);
                 return null;
             }
-        }).collect(Collectors.toSet());
+        }).filter(Objects::nonNull).sorted(Comparator.comparingInt(clazz -> clazz.getAnnotation(Component.class).priority().getPriority())).collect(Collectors.toList());
 
         for (Class<?> clazz : allClasses) {
             try {
@@ -67,8 +74,8 @@ public class SupervisorLoader {
 
 
     private static Object createComponentInstance(Class<?> clazz, Plugin plugin) throws Exception {
-        final Constructor<?>[] constructors = clazz.getConstructors();
-        final Constructor<?> constructor = constructors[0];
+        final Constructor<?> constructor = getComponentConstructor(clazz);
+
         final Class<?>[] paramTypes = constructor.getParameterTypes();
         final Object[] params = new Object[paramTypes.length];
 
@@ -76,7 +83,7 @@ public class SupervisorLoader {
 
         if (mainInstance != null)
             return mainInstance;
-        
+
         for (int i = 0; i < paramTypes.length; i++) {
             final Class<?> paramType = paramTypes[i];
             Object serviceInstance = Services.loadIfPresent(paramType);
