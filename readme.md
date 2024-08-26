@@ -133,7 +133,7 @@ import co.aikar.commands.PaperCommandManager;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.Default;
 import com.cjcameron92.clearchat.config.ClearChatConfig;
-import gg.supervisor.core.util.Text;
+import gg.supervisor.common.chat.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
