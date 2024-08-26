@@ -1,4 +1,4 @@
-package gg.supervisor.common.runnable;
+package gg.supervisor.util.runnable;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;

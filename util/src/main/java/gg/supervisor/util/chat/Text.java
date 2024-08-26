@@ -1,4 +1,4 @@
-package gg.supervisor.common.chat;
+package gg.supervisor.util.chat;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;

@@ -1,4 +1,4 @@
-package gg.supervisor.common.permission;
+package gg.supervisor.util.permission;
 
 public interface OctalValue {
 

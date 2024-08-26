@@ -1,4 +1,4 @@
-package gg.supervisor.common.selector;
+package gg.supervisor.util.selector;
 
 import java.util.*;
 import java.util.function.Function;

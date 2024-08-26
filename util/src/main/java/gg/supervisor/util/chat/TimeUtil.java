@@ -1,4 +1,4 @@
-package gg.supervisor.common.chat;
+package gg.supervisor.util.chat;
 
 import java.time.LocalTime;
 import java.time.ZoneId;

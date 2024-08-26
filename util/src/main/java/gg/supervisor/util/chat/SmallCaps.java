@@ -1,4 +1,4 @@
-package gg.supervisor.common.chat;
+package gg.supervisor.util.chat;
 
 import java.util.HashMap;
 import java.util.Map;

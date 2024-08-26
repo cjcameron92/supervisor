@@ -1,4 +1,4 @@
-package gg.supervisor.common.permission;
+package gg.supervisor.util.permission;
 
 import java.util.HashSet;
 import java.util.Set;

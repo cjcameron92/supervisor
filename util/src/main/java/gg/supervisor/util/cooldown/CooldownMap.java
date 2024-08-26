@@ -1,4 +1,4 @@
-package gg.supervisor.common.cooldown;
+package gg.supervisor.util.cooldown;
 
 import java.util.HashMap;
 
