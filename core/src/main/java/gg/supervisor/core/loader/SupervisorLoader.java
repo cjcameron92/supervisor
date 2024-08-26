@@ -1,6 +1,7 @@
 package gg.supervisor.core.loader;
 
 import gg.supervisor.core.annotation.Component;
+import gg.supervisor.core.annotation.ComponentConstructor;
 import gg.supervisor.core.annotation.Configuration;
 import gg.supervisor.core.config.ConfigService;
 import gg.supervisor.core.util.Services;
@@ -98,11 +99,20 @@ public class SupervisorLoader {
                 Services.register(paramType, paramInstance);
                 params[i] = paramInstance;
             } else {
-                throw new Exception("No component found for required type: " + paramType.getName());
+                throw new Exception("No component found for required type: " + paramType.getName() + " in " + clazz.getName());
             }
         }
 
         return constructor.newInstance(params);
+    }
+
+    private static Constructor<?> getComponentConstructor(Class<?> clazz) {
+        for (Constructor<?> clazzConstructor : clazz.getConstructors()) {
+            if (clazzConstructor.isAnnotationPresent(ComponentConstructor.class))
+                return clazzConstructor;
+        }
+
+        return clazz.getConstructors()[0];
     }
 
 }
