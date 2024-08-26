@@ -4,7 +4,7 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.JsonParseException;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import gg.supervisor.api.Adapter;
+import gg.supervisor.core.annotation.Adapter;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Block;

@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
-import gg.supervisor.api.Component;
+import gg.supervisor.core.annotation.Component;
 import gg.supervisor.configuration.AbstractConfigService;
 import org.bukkit.plugin.Plugin;
 

@@ -2,7 +2,7 @@ package gg.supervisor.redis;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import gg.supervisor.api.Component;
+import gg.supervisor.core.annotation.Component;
 import redis.clients.jedis.JedisPubSub;
 
 import java.lang.reflect.ParameterizedType;
