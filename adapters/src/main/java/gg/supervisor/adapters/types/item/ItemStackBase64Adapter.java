@@ -3,7 +3,7 @@ package gg.supervisor.adapters.types.item;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import gg.supervisor.api.Adapter;
+import gg.supervisor.core.annotation.Adapter;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;

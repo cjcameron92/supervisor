@@ -1,7 +1,6 @@
 package gg.supervisor.redis;
 
-
-import gg.supervisor.api.Services;
+import gg.supervisor.core.util.Services;
 
 public interface RedisPublisher {
 

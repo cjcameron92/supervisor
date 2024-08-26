@@ -1,6 +1,6 @@
 package gg.supervisor.redis;
 
-import gg.supervisor.repository.AbstractProxyHandler;
+import gg.supervisor.adapters.handler.AbstractProxyHandler;
 import redis.clients.jedis.Jedis;
 
 import java.lang.reflect.*;
