@@ -11,8 +11,14 @@ public class Services {
         registeredServices.put(clazz, type);
     }
 
-    public static <T> T loadIfPresent(Class<T> clazz) {
+    public static <T> T getService(Class<T> clazz) {
         return (T) registeredServices.get(clazz);
+    }
+
+    public static <T> T loadIfPresent(Class<T> clazz) {
+
+        T instance = (T) registeredServices.get(clazz);
+        return instance;
     }
 
     public static Map<Class<?>, Object> getRegisteredServices() {
