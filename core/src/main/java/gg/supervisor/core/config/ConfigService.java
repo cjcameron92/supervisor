@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface ConfigService {
 
-    Object register(Class<?> clazz, Object instance, File file);
+    <Type> Type register(Class<Type> clazz, Type instance, File file);
 
     void save(Object obj, File file);
 
