@@ -79,14 +79,14 @@ public class SupervisorLoader {
         final Class<?>[] paramTypes = constructor.getParameterTypes();
         final Object[] params = new Object[paramTypes.length];
 
-        Object mainInstance = Services.loadIfPresent(clazz);
+        Object mainInstance = Services.getService(clazz);
 
         if (mainInstance != null)
             return mainInstance;
 
         for (int i = 0; i < paramTypes.length; i++) {
             final Class<?> paramType = paramTypes[i];
-            Object serviceInstance = Services.loadIfPresent(paramType);
+            Object serviceInstance = Services.getService(paramType);
 
             if (serviceInstance != null) {
                 params[i] = serviceInstance;
