@@ -74,6 +74,8 @@ public class SupervisorLoader {
 
 
     private static Object createComponentInstance(Class<?> clazz, Plugin plugin) throws Exception {
+        System.out.println("Attempting to create Instance of " + clazz.getSimpleName());
+
         final Constructor<?> constructor = getComponentConstructor(clazz);
 
         final Class<?>[] paramTypes = constructor.getParameterTypes();
@@ -98,10 +100,13 @@ public class SupervisorLoader {
             } else if (paramType.isAnnotationPresent(Configuration.class)) {
                 Object paramInstance = createComponentInstance(paramType, plugin);
                 final Configuration configuration = paramInstance.getClass().getAnnotation(Configuration.class);
-                final Class<? extends ConfigService> cfz = configuration.service();
-                final Constructor<? extends ConfigService> crz = cfz.getConstructor(Plugin.class);
-                final ConfigService configService = crz.newInstance(plugin);
-                configService.register(paramInstance.getClass(), paramInstance, new File(plugin.getDataFolder(), configuration.fileName()));
+
+                final ConfigService configService = (ConfigService) createComponentInstance(configuration.service(), plugin);
+
+                @SuppressWarnings("unchecked")
+                Class<Object> paramClass = (Class<Object>) paramInstance.getClass();
+                configService.register(paramClass, paramInstance, new File(plugin.getDataFolder(), configuration.fileName()));
+
                 Bukkit.getLogger().info("Registered configuration for file " + configuration.fileName());
                 Services.register(paramType, paramInstance);
                 params[i] = paramInstance;
