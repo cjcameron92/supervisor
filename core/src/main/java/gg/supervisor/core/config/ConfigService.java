@@ -8,6 +8,8 @@ import java.util.Optional;
 
 public interface ConfigService {
 
+    String getExtension();
+
     <Type> Type register(Class<Type> clazz, Type instance, File file);
 
     void save(Object obj, File file);

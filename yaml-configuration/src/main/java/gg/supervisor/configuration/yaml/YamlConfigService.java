@@ -9,8 +9,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
-import gg.supervisor.core.annotation.Component;
 import gg.supervisor.configuration.AbstractConfigService;
+import gg.supervisor.core.annotation.Component;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
@@ -29,10 +29,15 @@ public class YamlConfigService extends AbstractConfigService {
             .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
             .configure(JsonParser.Feature.AUTO_CLOSE_SOURCE, true)
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-            .setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));;
+            .setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
 
     public YamlConfigService(Plugin plugin) {
         super();
+    }
+
+    @Override
+    public String getExtension() {
+        return EXT;
     }
 
     @Override

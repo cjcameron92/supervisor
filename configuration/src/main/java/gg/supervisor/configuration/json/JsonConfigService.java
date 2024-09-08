@@ -2,8 +2,8 @@ package gg.supervisor.configuration.json;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import gg.supervisor.core.annotation.Component;
 import gg.supervisor.configuration.AbstractConfigService;
+import gg.supervisor.core.annotation.Component;
 import org.bukkit.plugin.Plugin;
 
 import java.io.BufferedReader;
@@ -30,6 +30,11 @@ public class JsonConfigService extends AbstractConfigService {
     }
 
     @Override
+    public String getExtension() {
+        return EXT;
+    }
+
+    @Override
     public void save(Object obj, File file) {
         trySave(obj, file, f -> f.getName().endsWith(EXT), (o, f) -> {
             try (BufferedWriter writer = Files.newBufferedWriter(file.toPath(), StandardCharsets.UTF_8)) {
@@ -50,4 +55,5 @@ public class JsonConfigService extends AbstractConfigService {
             }
             return null;
         }));
-    }}
+    }
+}
