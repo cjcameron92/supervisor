@@ -20,7 +20,6 @@ public interface ConfigService {
 
     default <Type> void reload(Class<Type> clazz, Object instance, File file) {
         load(clazz, file).ifPresent(config -> {
-            System.out.println(config.getClass().getName());
 
             for (Field field : config.getClass().getDeclaredFields()) {
                 int mod = field.getModifiers();
@@ -32,7 +31,7 @@ public interface ConfigService {
                 field.setAccessible(true);
 
                 try {
-                    System.out.println("Set " + field.getName() + " to " + field.get(config));
+//                    System.out.println("Set " + field.getName() + " to " + field.get(config));
                     field.set(instance, field.get(config));
                 } catch (Exception e) {
                     e.printStackTrace();
