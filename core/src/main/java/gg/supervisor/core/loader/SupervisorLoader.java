@@ -74,7 +74,7 @@ public class SupervisorLoader {
 
 
     private static Object createComponentInstance(Class<?> clazz, Plugin plugin) throws Exception {
-        System.out.println("Attempting to create Instance of " + clazz.getSimpleName());
+//        System.out.println("Attempting to create Instance of " + clazz.getSimpleName());
 
         final Constructor<?> constructor = getComponentConstructor(clazz);
 
