@@ -1,8 +1,8 @@
 package gg.supervisor.configuration;
 
-import gg.supervisor.api.Config;
-import gg.supervisor.api.ConfigService;
 import gg.supervisor.configuration.exception.ConfigNotRegisteredException;
+import gg.supervisor.core.config.Config;
+import gg.supervisor.core.config.ConfigService;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,14 +22,15 @@ public abstract class AbstractConfigService implements ConfigService {
     protected final Map<Class<?>, Object> loadedConfigs = new ConcurrentHashMap<>();
     private static final Logger LOGGER = Logger.getLogger(AbstractConfigService.class.getName());
 
-    public AbstractConfigService() {}
+    public AbstractConfigService() {
+    }
 
     protected void registerData(Class<?> clazz, Object type) {
         this.loadedConfigs.put(clazz, type);
     }
 
     @Override
-    public Object register(Class<?> clazz, Object instance, File file) {
+    public <Type> Type register(Class<Type> clazz, Type instance, File file) {
         if (!file.exists()) {
             try {
                 Files.createFile(file.toPath());

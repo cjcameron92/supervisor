@@ -1,6 +1,6 @@
 package gg.supervisor.repository.annotation;
 
-import gg.supervisor.repository.ProxyHandler;
+import gg.supervisor.adapters.handler.ProxyHandler;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

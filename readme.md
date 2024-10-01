@@ -95,25 +95,26 @@ git clone https://github.com/cjcameron92/supervisor.git
 ```
 
 ## Example
+
 ```java
 package com.cjcameron92.clearchat;
 
 import co.aikar.commands.PaperCommandManager;
-import gg.supervisor.loader.SupervisorLoader;
+import gg.supervisor.core.loader.SupervisorLoader;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class ClearChatPlugin extends JavaPlugin {
 
-    @Override
-    public void onEnable() {
-        SupervisorLoader.register(this, new PaperCommandManager(this));
-    }
+  @Override
+  public void onEnable() {
+    SupervisorLoader.register(this, new PaperCommandManager(this));
+  }
 }
 ```
 ```java
 package com.cjcameron92.clearchat.config;
 
-import gg.supervisor.api.Configuration;
+import gg.supervisor.core.annotation.Configuration;
 import gg.supervisor.configuration.yaml.YamlConfigService;
 
 @Configuration(fileName = "config.yml", service = YamlConfigService.class)
@@ -124,6 +125,7 @@ public class ClearChatConfig {
     public String chatClearedMessage = "&e(!) Chat has been cleared by %player%.";
 }
 ```
+
 ```java
 package com.cjcameron92.clearchat.command;
 
@@ -132,32 +134,32 @@ import co.aikar.commands.PaperCommandManager;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.Default;
 import com.cjcameron92.clearchat.config.ClearChatConfig;
-import gg.supervisor.api.util.Text;
+import gg.supervisor.util.chat.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 @CommandAlias("clearchat:cc")
 public class ClearChatCommand extends BaseCommand {
 
-    private final ClearChatConfig clearChatConfig;
+  private final ClearChatConfig clearChatConfig;
 
-    public ClearChatCommand(PaperCommandManager commandManager, ClearChatConfig clearChatConfig) {
-        commandManager.registerCommand(this);
-        this.clearChatConfig = clearChatConfig;
+  public ClearChatCommand(PaperCommandManager commandManager, ClearChatConfig clearChatConfig) {
+    commandManager.registerCommand(this);
+    this.clearChatConfig = clearChatConfig;
+  }
+
+  @Default
+  public void onChatCleared(CommandSender sender) {
+    if (!sender.hasPermission(clearChatConfig.permissionRequired)) {
+      sender.sendMessage(Text.translate(clearChatConfig.deniedPermissionMessage));
+      return;
     }
 
-    @Default
-    public void onChatCleared(CommandSender sender) {
-        if (!sender.hasPermission(clearChatConfig.permissionRequired)) {
-            sender.sendMessage(Text.translate(clearChatConfig.deniedPermissionMessage));
-            return;
-        }
+    for (int i = 0; i < 50; i++)
+      Bukkit.broadcast(Text.translate("\n"));
 
-        for (int i = 0; i < 50; i++)
-            Bukkit.broadcast(Text.translate("\n"));
-
-        Bukkit.broadcast(Text.translate(clearChatConfig.chatClearedMessage.replaceAll("%player%", sender.getName())));
-    }
+    Bukkit.broadcast(Text.translate(clearChatConfig.chatClearedMessage.replaceAll("%player%", sender.getName())));
+  }
 }
 ```
 

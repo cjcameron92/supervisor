@@ -7,7 +7,7 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":api"))
+    implementation(project(":core"))
     implementation(project(":configuration"))
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.15.2")
 }

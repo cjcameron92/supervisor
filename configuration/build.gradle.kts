@@ -1,4 +1,4 @@
 
 dependencies {
-    implementation(project(":api"))
+    compileOnly(project(":core"))
 }

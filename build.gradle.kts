@@ -18,7 +18,7 @@ allprojects {
 
 }
 
-val projectsToPublish = listOf("api", "loader", "yaml-configuration")
+val projectsToPublish = listOf("loader", "yaml-configuration")
 
 
 subprojects {

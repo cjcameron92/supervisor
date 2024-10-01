@@ -9,7 +9,8 @@ repositories {
 dependencies {
     implementation("redis.clients:jedis:5.0.0")
     implementation(project(":repository"))
-    implementation(project(":api"))
+    compileOnly(project(":core"))
+    compileOnly(project(":adapters"))
 
 }
 
