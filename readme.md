@@ -125,6 +125,7 @@ public class ClearChatConfig {
     public String chatClearedMessage = "&e(!) Chat has been cleared by %player%.";
 }
 ```
+
 ```java
 package com.cjcameron92.clearchat.command;
 
@@ -133,32 +134,32 @@ import co.aikar.commands.PaperCommandManager;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.Default;
 import com.cjcameron92.clearchat.config.ClearChatConfig;
-import gg.supervisor.core.util.Text;
+import gg.supervisor.util.chat.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 @CommandAlias("clearchat:cc")
 public class ClearChatCommand extends BaseCommand {
 
-    private final ClearChatConfig clearChatConfig;
+  private final ClearChatConfig clearChatConfig;
 
-    public ClearChatCommand(PaperCommandManager commandManager, ClearChatConfig clearChatConfig) {
-        commandManager.registerCommand(this);
-        this.clearChatConfig = clearChatConfig;
+  public ClearChatCommand(PaperCommandManager commandManager, ClearChatConfig clearChatConfig) {
+    commandManager.registerCommand(this);
+    this.clearChatConfig = clearChatConfig;
+  }
+
+  @Default
+  public void onChatCleared(CommandSender sender) {
+    if (!sender.hasPermission(clearChatConfig.permissionRequired)) {
+      sender.sendMessage(Text.translate(clearChatConfig.deniedPermissionMessage));
+      return;
     }
 
-    @Default
-    public void onChatCleared(CommandSender sender) {
-        if (!sender.hasPermission(clearChatConfig.permissionRequired)) {
-            sender.sendMessage(Text.translate(clearChatConfig.deniedPermissionMessage));
-            return;
-        }
+    for (int i = 0; i < 50; i++)
+      Bukkit.broadcast(Text.translate("\n"));
 
-        for (int i = 0; i < 50; i++)
-            Bukkit.broadcast(Text.translate("\n"));
-
-        Bukkit.broadcast(Text.translate(clearChatConfig.chatClearedMessage.replaceAll("%player%", sender.getName())));
-    }
+    Bukkit.broadcast(Text.translate(clearChatConfig.chatClearedMessage.replaceAll("%player%", sender.getName())));
+  }
 }
 ```
 

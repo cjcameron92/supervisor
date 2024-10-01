@@ -22,14 +22,15 @@ public abstract class AbstractConfigService implements ConfigService {
     protected final Map<Class<?>, Object> loadedConfigs = new ConcurrentHashMap<>();
     private static final Logger LOGGER = Logger.getLogger(AbstractConfigService.class.getName());
 
-    public AbstractConfigService() {}
+    public AbstractConfigService() {
+    }
 
     protected void registerData(Class<?> clazz, Object type) {
         this.loadedConfigs.put(clazz, type);
     }
 
     @Override
-    public Object register(Class<?> clazz, Object instance, File file) {
+    public <Type> Type register(Class<Type> clazz, Type instance, File file) {
         if (!file.exists()) {
             try {
                 Files.createFile(file.toPath());

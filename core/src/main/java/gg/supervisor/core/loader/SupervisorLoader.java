@@ -1,6 +1,7 @@
 package gg.supervisor.core.loader;
 
 import gg.supervisor.core.annotation.Component;
+import gg.supervisor.core.annotation.ComponentConstructor;
 import gg.supervisor.core.annotation.Configuration;
 import gg.supervisor.core.config.ConfigService;
 import gg.supervisor.core.util.Services;
@@ -14,7 +15,9 @@ import org.reflections.util.ConfigurationBuilder;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
-import java.util.Set;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class SupervisorLoader {
@@ -32,21 +35,26 @@ public class SupervisorLoader {
 
         final String pluginPackageName = plugin.getClass().getPackage().getName();
         final ClassLoader pluginClassLoader = plugin.getClass().getClassLoader();
-        System.out.println(pluginPackageName);
 
         final Reflections reflections = new Reflections(new ConfigurationBuilder()
                 .setUrls(ClasspathHelper.forPackage(pluginPackageName, pluginClassLoader))
                 .setScanners(new SubTypesScanner(false)));
 
 
-        final Set<Class<?>> allClasses = reflections.getAll(new SubTypesScanner(false)).stream().filter(x -> x.startsWith(pluginPackageName)).map(x -> {
+        final List<Class<?>> allClasses = reflections.getAll(new SubTypesScanner(false)).stream().filter(x -> x.startsWith(pluginPackageName)).map(x -> {
             try {
-                return Class.forName(x);
+                Class<?> clazz = Class.forName(x);
+
+                if (!clazz.isAnnotationPresent(Component.class))
+                    return null;
+
+                return clazz;
+
             } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+                System.out.println("Couldn't locate class with the name " + x);
                 return null;
             }
-        }).collect(Collectors.toSet());
+        }).filter(Objects::nonNull).sorted(Comparator.comparingInt(clazz -> clazz.getAnnotation(Component.class).priority().getPriority())).collect(Collectors.toList());
 
         for (Class<?> clazz : allClasses) {
             try {
@@ -66,19 +74,21 @@ public class SupervisorLoader {
 
 
     private static Object createComponentInstance(Class<?> clazz, Plugin plugin) throws Exception {
-        final Constructor<?>[] constructors = clazz.getConstructors();
-        final Constructor<?> constructor = constructors[0];
+//        System.out.println("Attempting to create Instance of " + clazz.getSimpleName());
+
+        final Constructor<?> constructor = getComponentConstructor(clazz);
+
         final Class<?>[] paramTypes = constructor.getParameterTypes();
         final Object[] params = new Object[paramTypes.length];
 
-        Object mainInstance = Services.loadIfPresent(clazz);
+        Object mainInstance = Services.getService(clazz);
 
         if (mainInstance != null)
             return mainInstance;
-        
+
         for (int i = 0; i < paramTypes.length; i++) {
             final Class<?> paramType = paramTypes[i];
-            Object serviceInstance = Services.loadIfPresent(paramType);
+            Object serviceInstance = Services.getService(paramType);
 
             if (serviceInstance != null) {
                 params[i] = serviceInstance;
@@ -90,19 +100,31 @@ public class SupervisorLoader {
             } else if (paramType.isAnnotationPresent(Configuration.class)) {
                 Object paramInstance = createComponentInstance(paramType, plugin);
                 final Configuration configuration = paramInstance.getClass().getAnnotation(Configuration.class);
-                final Class<? extends ConfigService> cfz = configuration.service();
-                final Constructor<? extends ConfigService> crz = cfz.getConstructor(Plugin.class);
-                final ConfigService configService = crz.newInstance(plugin);
-                configService.register(paramInstance.getClass(), paramInstance, new File(plugin.getDataFolder(), configuration.fileName()));
+
+                final ConfigService configService = (ConfigService) createComponentInstance(configuration.service(), plugin);
+
+                @SuppressWarnings("unchecked")
+                Class<Object> paramClass = (Class<Object>) paramInstance.getClass();
+                configService.register(paramClass, paramInstance, new File(plugin.getDataFolder(), configuration.fileName()));
+
                 Bukkit.getLogger().info("Registered configuration for file " + configuration.fileName());
                 Services.register(paramType, paramInstance);
                 params[i] = paramInstance;
             } else {
-                throw new Exception("No component found for required type: " + paramType.getName());
+                throw new Exception("No component found for required type: " + paramType.getName() + " in " + clazz.getName());
             }
         }
 
         return constructor.newInstance(params);
+    }
+
+    private static Constructor<?> getComponentConstructor(Class<?> clazz) {
+        for (Constructor<?> clazzConstructor : clazz.getConstructors()) {
+            if (clazzConstructor.isAnnotationPresent(ComponentConstructor.class))
+                return clazzConstructor;
+        }
+
+        return clazz.getConstructors()[0];
     }
 
 }
