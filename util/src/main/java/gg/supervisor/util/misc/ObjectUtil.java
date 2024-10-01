@@ -8,5 +8,5 @@ public class ObjectUtil {
     public static <T> void ifNotNull(T object, Consumer<T> consumer) {
         Optional.ofNullable(object).ifPresent(consumer);
     }
-    
+
 }
