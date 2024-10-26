@@ -171,4 +171,7 @@ For support, join our Discord or consult the Wiki for troubleshooting tips. Cont
 [Hadi Mafhouz](https://github.com/Hadimhz)  
 [Cameron Carvalho](https://github.com/cjcameron92)
 
+[Vertmix](https://vertmix.com)  
+[Games](https://toprobloxgames.com)  
+[More](https://bestrobloxgames.com)  
 
