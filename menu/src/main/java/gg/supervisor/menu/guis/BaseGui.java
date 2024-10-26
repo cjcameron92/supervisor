@@ -42,6 +42,7 @@ public abstract class BaseGui implements InventoryHolder {
     private final @Getter Map<Integer, MenuItem> MenuItems;
     private final @Getter Map<Integer, GuiAction<InventoryClickEvent>> slotActions;
     private final @Getter Set<InteractionModifier> interactionModifiers;
+    private final @Getter Decorator decorator = new Decorator(this);
 
     private Inventory inventory;
     private Component title;
@@ -60,7 +61,6 @@ public abstract class BaseGui implements InventoryHolder {
 
     @Nullable
     private @Getter @Setter Function<HumanEntity, BaseGui> fallbackGui = null;
-
 
     private @Getter @Setter boolean updating;
 
