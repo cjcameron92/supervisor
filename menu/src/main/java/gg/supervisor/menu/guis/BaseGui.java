@@ -1,12 +1,12 @@
 package gg.supervisor.menu.guis;
 
+import gg.supervisor.menu.action.GuiAction;
 import gg.supervisor.menu.entities.GuiType;
 import gg.supervisor.menu.entities.InteractionModifier;
 import gg.supervisor.menu.exception.MenuException;
-import gg.supervisor.menu.guis.action.GuiAction;
-import gg.supervisor.menu.guis.item.MenuItem;
-import gg.supervisor.menu.guis.listener.InteractionModifierListener;
-import gg.supervisor.menu.guis.listener.MenuListener;
+import gg.supervisor.menu.item.MenuItem;
+import gg.supervisor.menu.listener.InteractionModifierListener;
+import gg.supervisor.menu.listener.MenuListener;
 import lombok.Getter;
 import lombok.Setter;
 import net.kyori.adventure.text.Component;
@@ -96,7 +96,8 @@ public abstract class BaseGui implements InventoryHolder {
         this.inventory = Bukkit.createInventory(this, inventorySize, title);
     }
 
-    public abstract void redraw();
+    public void redraw() {
+    }
 
     @NotNull
     public Component title() {
