@@ -1,4 +1,4 @@
-package gg.supervisor.menu.guis.action;
+package gg.supervisor.menu.action;
 
 import org.bukkit.event.Event;
 

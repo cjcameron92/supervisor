@@ -1,7 +1,7 @@
-package gg.supervisor.menu.guis.item;
+package gg.supervisor.menu.item;
 
 import com.google.common.base.Preconditions;
-import gg.supervisor.menu.guis.action.GuiAction;
+import gg.supervisor.menu.action.GuiAction;
 import gg.supervisor.menu.util.ItemContainers;
 import lombok.Getter;
 import lombok.Setter;

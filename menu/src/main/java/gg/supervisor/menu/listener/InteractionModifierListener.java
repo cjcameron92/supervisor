@@ -1,4 +1,4 @@
-package gg.supervisor.menu.guis.listener;
+package gg.supervisor.menu.listener;
 
 import com.google.common.base.Preconditions;
 import gg.supervisor.menu.guis.BaseGui;

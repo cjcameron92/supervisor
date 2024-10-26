@@ -1,8 +1,8 @@
-package gg.supervisor.menu.guis.listener;
+package gg.supervisor.menu.listener;
 
+import gg.supervisor.menu.action.GuiAction;
 import gg.supervisor.menu.guis.BaseGui;
-import gg.supervisor.menu.guis.action.GuiAction;
-import gg.supervisor.menu.guis.item.MenuItem;
+import gg.supervisor.menu.item.MenuItem;
 import gg.supervisor.menu.util.ItemContainers;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
