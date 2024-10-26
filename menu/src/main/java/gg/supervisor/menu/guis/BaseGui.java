@@ -108,6 +108,7 @@ public abstract class BaseGui implements InventoryHolder {
         if (player.isSleeping()) return;
 
         inventory.clear();
+        populateGui();
         redraw();
         firstRedraw = false;
 
