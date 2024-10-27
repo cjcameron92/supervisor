@@ -61,7 +61,7 @@ public class Pager {
         int start = (getPage() * getStep()) % pageItems.size();
         int end = Math.min(pageItems.size(), start + getPageSize());
 
-        System.out.println("rendering: " + page);
+//        System.out.println("rendering: " + page);
 
         if (endless != EndlessType.NONE) {
             currentPageItems = new ArrayList<>(pageItems.subList(start, end));
