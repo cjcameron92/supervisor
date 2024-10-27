@@ -281,28 +281,30 @@ public abstract class BaseGui implements InventoryHolder {
     }
 
     public void close(@NotNull final HumanEntity player, final boolean runCloseAction, boolean runForwardAction) {
-        Runnable task = () -> {
-            this.runCloseAction = runCloseAction;
-            player.closeInventory();
-            this.runCloseAction = true;
 
-            Bukkit.getScheduler().runTaskLater(plugin, () -> { // Run fallback action
-                if (runForwardAction && this.fallbackGui != null)
-                    this.fallbackGui.apply(player).open(player);
-            }, 2L);
+        this.runCloseAction = runCloseAction;
+        player.closeInventory();
 
-        };
+        this.runCloseAction = true;
 
-        Bukkit.getScheduler().runTaskLater(plugin, task, 2L);
+        if (!runForwardAction || this.fallbackGui == null)
+            return;
+
+        Bukkit.getScheduler().runTaskLater(plugin, () -> { // Run fallback action
+            this.fallbackGui.apply(player).open(player);
+        }, 2L);
+
+
+    }
+
+    public void close(@NotNull final HumanEntity player, final boolean runCloseAction) {
+        close(player, runCloseAction, true);
     }
 
     public void close(@NotNull final HumanEntity player) {
         close(player, true, true);
     }
 
-    public void close(@NotNull final HumanEntity player, final boolean runCloseAction) {
-        close(player, runCloseAction, true);
-    }
 
     @NotNull
     private Set<InteractionModifier> safeCopyOf(@NotNull final Set<InteractionModifier> set) {
