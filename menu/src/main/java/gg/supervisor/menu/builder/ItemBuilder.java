@@ -1,9 +1,12 @@
 package gg.supervisor.menu.builder;
 
+import gg.supervisor.menu.action.GuiAction;
+import gg.supervisor.menu.item.MenuItem;
 import gg.supervisor.util.chat.Text;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -137,4 +140,21 @@ public class ItemBuilder {
 
         return duplicate;
     }
+
+    public MenuItem menuItem() {
+        return new MenuItem(build());
+    }
+
+    public MenuItem menuItem(GuiAction<InventoryClickEvent> action) {
+        return new MenuItem(build(), action);
+    }
+
+    public MenuItem menuItem(Function<String, String> replace, GuiAction<InventoryClickEvent> action) {
+        return new MenuItem(build(replace), action);
+    }
+
+    public MenuItem menuItem(Function<String, String> replace, Consumer<ItemStack> consumer, GuiAction<InventoryClickEvent> action) {
+        return new MenuItem(build(replace, consumer), action);
+    }
+
 }
