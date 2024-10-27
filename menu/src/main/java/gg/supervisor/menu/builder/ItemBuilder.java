@@ -100,6 +100,11 @@ public class ItemBuilder {
         return this;
     }
 
+    public ItemBuilder editItem(Consumer<ItemStack> consumer) {
+        consumer.accept(item);
+        return this;
+    }
+
     public ItemStack build() {
         item.setItemMeta(itemMeta);
         return item;
