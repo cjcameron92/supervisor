@@ -88,7 +88,7 @@ public class Pager {
         if (!hasNextPage())
             return false;
 
-        page = (page + 1) % pageItems.size();
+        page = (page + 1) % (endless == EndlessType.TRULY_ENDLESS ? pageItems.size() : getTotalPages() + 1);
         updatePage();
 
         return true;
@@ -98,7 +98,7 @@ public class Pager {
         if (!hasPreviousPage())
             return false;
 
-        page = endless != EndlessType.NONE ? ((getPage() - 1) < 0 ? pageItems.size() - 1 : (getPage() - 1)) : Math.max(0, getPage() - 1);
+        page = endless != EndlessType.NONE ? ((getPage() - 1) < 0 ? (endless == EndlessType.TRULY_ENDLESS ? pageItems.size() - 1 : getTotalPages()) : (getPage() - 1)) : Math.max(0, getPage() - 1);
         updatePage();
 
         return true;
