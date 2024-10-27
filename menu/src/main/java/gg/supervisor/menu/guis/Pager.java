@@ -90,7 +90,7 @@ public class Pager {
         if (!hasNextPage())
             return false;
 
-        page++;
+        page = (page + 1) % pageItems.size();
         updatePage();
 
         return true;
@@ -100,7 +100,7 @@ public class Pager {
         if (!hasPreviousPage())
             return false;
 
-        page = endless ? getPage() - 1 : Math.max(0, getPage() - 1);
+        page = endless ? ((getPage() - 1) < 0 ? pageItems.size() - 1 : (getPage() - 1)) : Math.max(0, getPage() - 1);
         updatePage();
 
         return true;
