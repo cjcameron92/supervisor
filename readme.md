@@ -1,21 +1,25 @@
-# Supervisor 
+# Supervisor
+
 [![Paper Build Status](https://img.shields.io/github/actions/workflow/status/PaperMC/Paper/build.yml?branch=master)](https://github.com/PaperMC/Paper/actions)
 [![Discord](https://img.shields.io/discord/289587909051416579.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/papermc)
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/papermc?label=GitHub%20Sponsors)](https://github.com/sponsors/cjcameron92)
+
 # Supervisor Framework for Minecraft Spigot Plugins
 
-Inspired by Spring Boot, the Supervisor Framework is designed to be both expandable and modular, making it the perfect choice for developing robust Minecraft Spigot plugins.
+Inspired by Spring Boot, the Supervisor Framework is designed to be both expandable and modular, making it the perfect
+choice for developing robust Minecraft Spigot plugins.
 
 ## Table of Contents
+
 - [Downloads](#downloads)
 - [User Guide](https://github.com/cjcameron92/supervisor/wiki/User-Guide)
 - [Wiki](https://github.com/cjcameron92/supervisor/wiki)
 - [Community and Support](#community-and-support)
 - [Quick Start](#quick-start)
-  - [Maven Setup](#maven-setup)
-  - [Gradle Setup](#gradle-setup)
-    - [Groovy](#groovy)
-    - [Kotlin DSL](#kotlin-dsl)
+    - [Maven Setup](#maven-setup)
+    - [Gradle Setup](#gradle-setup)
+        - [Groovy](#groovy)
+        - [Kotlin DSL](#kotlin-dsl)
 - [Example](#example)
 
 ## Downloads
@@ -45,40 +49,49 @@ Inspired by Spring Boot, the Supervisor Framework is designed to be both expanda
 [`supervisor-storage`](https://repo.world/cjcameron92/downloads/supervisor-storage.jar)
 
 ## Community and Support
+
 - [Discord](https://discord.gg/vertmix)
 
 ## Quick Start
 
 ### Latest Releases
+
 - **Stable Release**: `0.0.4`
 - **Dev Release**: `0.0.5-dev`
 
 ### Maven Setup
+
 Add the repository and dependency to your `pom.xml`:
+
 ```xml
+
 <repository>
-  <url>https://cjcameron92.repo.world</url>
+    <url>https://cjcameron92.repo.world</url>
 </repository>
 
 <dependency>
-  <groupId>gg.supervisor</groupId>
-  <artifactId>bundle</artifactId>
-  <version>LATEST</version>
+<groupId>gg.supervisor</groupId>
+<artifactId>bundle</artifactId>
+<version>LATEST</version>
 </dependency>
 ```
 
 ### Gradle Setup
+
 #### Groovy
+
 Add the repository and dependency to your `build.gradle`:
+
 ```groovy
 maven {
-  url = "https://cjcameron92.repo.world"
+    url = "https://cjcameron92.repo.world"
 }
 
 implementation("gg.supervisor:bundle:VERSION")
 ```
 
 #### Kotlin DSL
+
 Add the repository and dependency to your `build.gradle.kts`:
 
 ```kts
@@ -88,6 +101,7 @@ implementation("gg.supervisor:bundle:VERSION")
 ```
 
 ### Local Setup
+
 ```bash
 git clone https://github.com/cjcameron92/supervisor.git
 ./setup.sh
@@ -105,18 +119,22 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class ClearChatPlugin extends JavaPlugin {
 
-  @Override
-  public void onEnable() {
-    SupervisorLoader.register(this, new PaperCommandManager(this));
-  }
+    // Class Loader Example
+
+    @Override
+    public void onEnable() {
+        SupervisorLoader.register(this, new PaperCommandManager(this));
+    }
 }
 ```
+
 ```java
 package com.cjcameron92.clearchat.config;
 
 import gg.supervisor.core.annotation.Configuration;
 import gg.supervisor.configuration.yaml.YamlConfigService;
 
+// Configuration Example
 @Configuration(fileName = "config.yml", service = YamlConfigService.class)
 public class ClearChatConfig {
 
@@ -135,39 +153,68 @@ import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.Default;
 import com.cjcameron92.clearchat.config.ClearChatConfig;
 import gg.supervisor.util.chat.Text;
+import gg.supervisor.core.annotation.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
+@Component // Class Loader Components
 @CommandAlias("clearchat:cc")
 public class ClearChatCommand extends BaseCommand {
 
-  private final ClearChatConfig clearChatConfig;
+    private final ClearChatConfig clearChatConfig;
 
-  public ClearChatCommand(PaperCommandManager commandManager, ClearChatConfig clearChatConfig) {
-    commandManager.registerCommand(this);
-    this.clearChatConfig = clearChatConfig;
-  }
-
-  @Default
-  public void onChatCleared(CommandSender sender) {
-    if (!sender.hasPermission(clearChatConfig.permissionRequired)) {
-      sender.sendMessage(Text.translate(clearChatConfig.deniedPermissionMessage));
-      return;
+    public ClearChatCommand(PaperCommandManager commandManager, ClearChatConfig clearChatConfig) {
+        commandManager.registerCommand(this);
+        this.clearChatConfig = clearChatConfig;
     }
 
-    for (int i = 0; i < 50; i++)
-      Bukkit.broadcast(Text.translate("\n"));
+    @Default
+    public void onChatCleared(CommandSender sender) {
+        if (!sender.hasPermission(clearChatConfig.permissionRequired)) {
+            sender.sendMessage(Text.translate(clearChatConfig.deniedPermissionMessage));
+            return;
+        }
 
-    Bukkit.broadcast(Text.translate(clearChatConfig.chatClearedMessage.replaceAll("%player%", sender.getName())));
-  }
+        for (int i = 0; i < 50; i++)
+            Bukkit.broadcast(Text.translate("\n"));
+
+        Bukkit.broadcast(Text.translate(clearChatConfig.chatClearedMessage.replaceAll("%player%", sender.getName())));
+    }
 }
 ```
 
+```java
+// Permission Example
+package dev.hadimhz.skyblock.entity;
+
+import gg.supervisor.util.permission.PermissionManager;
+import lombok.Getter;
+
+@Getter
+public enum Permission {
+    CHEST_ACCESS,
+    PLACE_BREAK,
+    BREAK_BLOCK,
+    FLY;
+
+
+    public static final @Getter PermissionManager<Permission> permissionManager = new PermissionManager<>(Permission.class);
+
+    public boolean has(int permissionValue) {
+        return permissionManager.hasPermission(permissionValue, this);
+    }
+
+}
+
+```
+
 ## Support and Contributions
-For support, join our Discord or consult the Wiki for troubleshooting tips. Contributions to the project are always welcome!
 
+For support, join our Discord or consult the Wiki for troubleshooting tips. Contributions to the project are always
+welcome!
 
-## Contributors 
+## Contributors
+
 [Hadi Mafhouz](https://github.com/Hadimhz)  
 [Cameron Carvalho](https://github.com/cjcameron92)
 
