@@ -52,4 +52,14 @@ public class MenuItem {
 
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof MenuItem menuItem)
+            return itemStack.equals(menuItem.getItemStack());
+
+        if (obj instanceof ItemStack item)
+            return itemStack.equals(item);
+
+        return itemStack.equals(obj);
+    }
 }
