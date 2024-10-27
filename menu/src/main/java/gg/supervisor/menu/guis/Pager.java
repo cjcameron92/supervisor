@@ -19,7 +19,7 @@ public class Pager {
     private @Getter List<MenuItem> currentPageItems = new ArrayList<>();
 
     private @Getter int step;
-    private @Getter @Setter boolean endless = false;
+    private @Getter @Setter EndlessType endless = EndlessType.NONE;
 
     private @Getter int page = 0;
 
@@ -42,15 +42,15 @@ public class Pager {
     }
 
     public int getTotalPages() {
-        return (int) (Math.ceil((double) pageItems.size() / step) - (endless ? getPageSize() : Math.floorDiv(getPageSize(), step)));
+        return (int) (Math.ceil((double) pageItems.size() / step) - (endless == EndlessType.TRULY_ENDLESS ? getPageSize() : Math.floorDiv(getPageSize(), step)));
     }
 
     public boolean hasNextPage() {
-        return endless || page < getTotalPages();
+        return endless != EndlessType.NONE || page < getTotalPages();
     }
 
     public boolean hasPreviousPage() {
-        return endless || page > 0;
+        return endless != EndlessType.NONE || page > 0;
     }
 
     public void updatePage() {
@@ -63,18 +63,16 @@ public class Pager {
 
         System.out.println("rendering: " + page);
 
-        if (endless) {
+        if (endless != EndlessType.NONE) {
             currentPageItems = new ArrayList<>(pageItems.subList(start, end));
 
-            if (currentPageItems.size() != getPageSize()) {
+            if (endless == EndlessType.TRULY_ENDLESS && currentPageItems.size() != getPageSize()) {
                 int dItem = getPageSize() - currentPageItems.size();
-
 //                System.out.println("total Items: " + pageItems.size() + " currentPageItems: " + currentPageItems.size() + " delta:" + dItem);
 
                 currentPageItems.addAll(pageItems.subList(0, dItem));
-
-                currentPageItems = Collections.unmodifiableList(currentPageItems);
             }
+            currentPageItems = Collections.unmodifiableList(currentPageItems);
         } else {
             currentPageItems = Collections.unmodifiableList(pageItems.subList(start, end));
         }
@@ -100,10 +98,16 @@ public class Pager {
         if (!hasPreviousPage())
             return false;
 
-        page = endless ? ((getPage() - 1) < 0 ? pageItems.size() - 1 : (getPage() - 1)) : Math.max(0, getPage() - 1);
+        page = endless != EndlessType.NONE ? ((getPage() - 1) < 0 ? pageItems.size() - 1 : (getPage() - 1)) : Math.max(0, getPage() - 1);
         updatePage();
 
         return true;
+    }
+
+    public enum EndlessType {
+        NONE,
+        SIMPLE,
+        TRULY_ENDLESS
     }
 
 }
