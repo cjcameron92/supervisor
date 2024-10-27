@@ -2,51 +2,95 @@ package gg.supervisor.menu.guis;
 
 import gg.supervisor.menu.item.MenuItem;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NonNull;
 import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@RequiredArgsConstructor
 public class Pager {
 
-    private final BaseGui gui;
+    private final @NonNull BaseGui gui;
+
     private final char decoratorChar;
+
     private final @Getter List<MenuItem> pageItems = new ArrayList<>();
     private @Getter List<MenuItem> currentPageItems = new ArrayList<>();
 
-    private @Setter @Getter int step = -1;
+    private @Getter int step;
+    private @Getter @Setter boolean endless = false;
+
+    private @Getter int page = 0;
+
+    public Pager(@NonNull BaseGui gui, char decoratorChar) {
+        this.gui = gui;
+        this.decoratorChar = decoratorChar;
+
+        this.step = getPageSize();
+    }
 
 //todo implement an optional fillItem
 //    private @Setter MenuItem fillItem = new MenuItem(new ItemStack(Material.BARRIER));
-
-    private @Getter int page;
-
-    private int getStepSize() {
-        return step == -1 ? getPageSize() : step;
-    }
 
     private int getPageSize() {
         return gui.getDecorator().getSlots(decoratorChar).size();
     }
 
+    public void setStep(int step) {
+        this.step = Math.max(Math.min(step, getPageSize()), 1);
+    }
+
+    public int getTotalPages() {
+        return (int) (Math.ceil((double) pageItems.size() / step) - (endless ? getPageSize() : Math.floorDiv(getPageSize(), step)));
+    }
+
+    public boolean hasNextPage() {
+        return endless || page < getTotalPages();
+    }
+
+    public boolean hasPreviousPage() {
+        return endless || page > 0;
+    }
+
     public void updatePage() {
-        int start = getPage() * getStepSize();
+
+        if (pageItems.isEmpty()) // Avoid ArithmeticException: / by zero
+            return;
+
+        int start = (getPage() * getStep()) % pageItems.size();
         int end = Math.min(pageItems.size(), start + getPageSize());
 
-        currentPageItems = Collections.unmodifiableList(pageItems.subList(start, end));
+        System.out.println("rendering: " + page);
+
+        if (endless) {
+            currentPageItems = new ArrayList<>(pageItems.subList(start, end));
+
+            if (currentPageItems.size() != getPageSize()) {
+                int dItem = getPageSize() - currentPageItems.size();
+
+//                System.out.println("total Items: " + pageItems.size() + " currentPageItems: " + currentPageItems.size() + " delta:" + dItem);
+
+                currentPageItems.addAll(pageItems.subList(0, dItem));
+
+                currentPageItems = Collections.unmodifiableList(currentPageItems);
+            }
+        } else {
+            currentPageItems = Collections.unmodifiableList(pageItems.subList(start, end));
+        }
 
         gui.getDecorator().remove(decoratorChar);
         gui.getDecorator().add(decoratorChar, currentPageItems);
     }
 
+
+    //todo implement adders and removers, along side a clear command
+
     public boolean next() {
         if (!hasNextPage())
             return false;
-        page++;
 
+        page++;
         updatePage();
 
         return true;
@@ -56,19 +100,10 @@ public class Pager {
         if (!hasPreviousPage())
             return false;
 
-        page = Math.max(0, getPage() - 1);
-
+        page = endless ? getPage() - 1 : Math.max(0, getPage() - 1);
         updatePage();
+
         return true;
-    }
-
-    public boolean hasNextPage() {
-
-        return page < (Math.ceil((double) pageItems.size() / getStepSize()) - 1);
-    }
-
-    public boolean hasPreviousPage() {
-        return page > 0;
     }
 
 }
