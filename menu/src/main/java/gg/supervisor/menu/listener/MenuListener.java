@@ -78,6 +78,8 @@ public class MenuListener implements Listener {
     public void onGuiClose(final InventoryCloseEvent event) {
         if (!(event.getInventory().getHolder() instanceof BaseGui gui)) return;
 
+        gui.onClose();
+
         final GuiAction<InventoryCloseEvent> closeAction = gui.getCloseGuiAction();
         if (closeAction != null && !gui.isUpdating() && gui.isRunCloseAction()) closeAction.run(event);
     }

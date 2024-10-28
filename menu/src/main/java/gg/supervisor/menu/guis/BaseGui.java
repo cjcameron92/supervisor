@@ -99,6 +99,9 @@ public abstract class BaseGui implements InventoryHolder {
     public void redraw() {
     }
 
+    public void onClose() {
+
+    }
     @NotNull
     public Component title() {
         return title;
