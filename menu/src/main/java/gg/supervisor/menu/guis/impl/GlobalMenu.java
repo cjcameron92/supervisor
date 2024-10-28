@@ -54,7 +54,6 @@ public class GlobalMenu extends BaseGui {
      *
      * @param player the player for whom this GUI will be opened
      */
-    @Override
     public void open(@NotNull HumanEntity player) {
         if (player.isSleeping()) return;
 

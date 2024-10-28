@@ -48,6 +48,13 @@ public class Pager {
         return page;
     }
 
+    public void setPage(int page) {
+        if (this.page != page) {
+            this.page = page;
+            updatePage();
+        }
+    }
+
     /**
      * Retrieves the page size based on the decorator character in the GUI.
      *

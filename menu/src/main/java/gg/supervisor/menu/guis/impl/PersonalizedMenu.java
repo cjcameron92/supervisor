@@ -6,7 +6,6 @@ import gg.supervisor.menu.exception.MenuException;
 import gg.supervisor.menu.guis.BaseGui;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,7 +25,7 @@ public class PersonalizedMenu extends BaseGui {
     /**
      * The player for whom this menu is personalized.
      */
-    protected @Getter Player player;
+    protected final @Getter Player player;
 
     private @Getter boolean invalid = false;
 
@@ -38,8 +37,10 @@ public class PersonalizedMenu extends BaseGui {
      * @param title                the title displayed on the GUI
      * @param interactionModifiers the set of interaction modifiers defining how the player can interact with this menu
      */
-    public PersonalizedMenu(@NotNull GuiType guiType, @NotNull Component title, @NotNull Set<InteractionModifier> interactionModifiers) {
+    public PersonalizedMenu(@NotNull GuiType guiType, @NotNull Component title, @NotNull Set<InteractionModifier> interactionModifiers, Player player) {
         super(guiType, title, interactionModifiers);
+
+        this.player = player;
     }
 
     /**
@@ -50,8 +51,10 @@ public class PersonalizedMenu extends BaseGui {
      * @param title                the title displayed on the GUI
      * @param interactionModifiers the set of interaction modifiers defining how the player can interact with this menu
      */
-    public PersonalizedMenu(int rows, @NotNull Component title, @NotNull Set<InteractionModifier> interactionModifiers) {
+    public PersonalizedMenu(int rows, @NotNull Component title, @NotNull Set<InteractionModifier> interactionModifiers, Player player) {
         super(rows, title, interactionModifiers);
+
+        this.player = player;
     }
 
     /**
@@ -64,34 +67,18 @@ public class PersonalizedMenu extends BaseGui {
      * <p>The method also clears the existing menu inventory, populates it based on the
      * current player's data, and initiates a redraw.</p>
      *
-     * @param player the player for whom this GUI will be opened
      * @throws MenuException if the menu is already assigned to a different player
      */
-    @Override
-    public void open(@NotNull HumanEntity player) {
-        if (player.isSleeping()) return;
 
-        if (this.player != null && !this.player.getUniqueId().equals(player.getUniqueId()))
-            throw new MenuException("There's already a player assigned to this menu.");
+    public void open() {
+        if (player.isSleeping()) return;
 
         if (invalid)
             throw new MenuException("This menu was invalidated.");
 
-
-        this.player = (Player) player;
-
         getInventory().clear();
-        populateGui();
-        redraw();
-        firstRedraw = false;
 
-        player.openInventory(getInventory());
-    }
-
-    @Override
-    public void close(@NotNull HumanEntity player, boolean runCloseAction, boolean runForwardAction) {
-        onClose();
-        super.close(player, runCloseAction, runForwardAction);
+        open(player);
     }
 
     @Override

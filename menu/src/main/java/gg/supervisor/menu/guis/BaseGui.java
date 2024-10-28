@@ -125,7 +125,7 @@ public abstract class BaseGui implements InventoryHolder {
      *
      * @param player the HumanEntity for whom the GUI will be opened
      */
-    public void open(@NotNull final HumanEntity player) {
+    protected void open(@NotNull final HumanEntity player) {
         if (player.isSleeping()) return;
 
         inventory.clear();
