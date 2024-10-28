@@ -3,7 +3,6 @@ package gg.supervisor.menu.guis;
 import gg.supervisor.menu.item.MenuItem;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -11,26 +10,27 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * The Pager class is responsible for managing pagination of items within a GUI.
- * It supports different pagination modes, such as endless scrolling and fixed pages.
+ * The {@code Pager} class is responsible for managing pagination of {@link MenuItem} instances within a {@link BaseGui}.
+ * It allows for navigating through pages of items, supports endless scrolling, and updates the GUI accordingly.
  */
 public class Pager {
 
     private final @NonNull BaseGui gui;
     private final char decoratorChar;
 
-    @Getter private final List<MenuItem> pageItems = new ArrayList<>();
-    @Getter private List<MenuItem> currentPageItems = new ArrayList<>();
-    @Getter private int step;
-    @Getter @Setter private EndlessType endless = EndlessType.NONE;
+    private @Getter final List<MenuItem> pageItems = new ArrayList<>();
+    private @Getter List<MenuItem> currentPageItems = new ArrayList<>();
+
+    private @Getter int step;
+    private @Getter EndlessType endless = EndlessType.NONE;
 
     private int page = 0;
 
     /**
-     * Constructs a Pager with a specific GUI and decorator character.
+     * Constructs a new {@code Pager} instance.
      *
-     * @param gui           the GUI to associate with this pager
-     * @param decoratorChar the character used for decoration in the GUI
+     * @param gui           The {@link BaseGui} associated with this pager. Must not be null.
+     * @param decoratorChar The character used to decorate the GUI with items.
      */
     public Pager(@NonNull BaseGui gui, char decoratorChar) {
         this.gui = gui;
@@ -39,15 +39,20 @@ public class Pager {
     }
 
     /**
-     * Gets the current page index, ensuring it is within valid bounds.
+     * Gets the current page number.
      *
-     * @return the current page index
+     * @return The current page number, clamped between 0 and the total number of pages.
      */
     public int getPage() {
         page = Math.max(0, Math.min(page, getTotalPages()));
         return page;
     }
 
+    /**
+     * Sets the current page number and updates the displayed items.
+     *
+     * @param page The page number to set.
+     */
     public void setPage(int page) {
         if (this.page != page) {
             this.page = page;
@@ -56,27 +61,40 @@ public class Pager {
     }
 
     /**
-     * Retrieves the page size based on the decorator character in the GUI.
+     * Sets the number of items to display per page.
      *
-     * @return the number of slots allocated for items on each page
+     * @param step The number of items per page. Must be at least 1.
+     * @return The current {@code Pager} instance for method chaining.
+     */
+    public Pager step(int step) {
+        this.step = Math.max(Math.min(step, getPageSize()), 1);
+        return this;
+    }
+
+    /**
+     * Sets the endless type of the pager.
+     *
+     * @param endless The type of endless pagination to use.
+     * @return The current {@code Pager} instance for method chaining.
+     */
+    public Pager endless(EndlessType endless) {
+        this.endless = endless;
+        return this;
+    }
+
+    /**
+     * Gets the size of the page, determined by the number of slots available for the decorator character.
+     *
+     * @return The size of the page.
      */
     private int getPageSize() {
         return gui.getDecorator().getSlots(decoratorChar).size();
     }
 
     /**
-     * Sets the number of items to display per step (page) with a minimum of 1.
+     * Calculates the total number of pages available based on the current items and the endless type.
      *
-     * @param step the number of items per step
-     */
-    public void setStep(int step) {
-        this.step = Math.max(Math.min(step, getPageSize()), 1);
-    }
-
-    /**
-     * Calculates the total number of pages based on the items and step size.
-     *
-     * @return the total number of pages
+     * @return The total number of pages.
      */
     public int getTotalPages() {
         return endless == EndlessType.TRULY_ENDLESS
@@ -85,44 +103,41 @@ public class Pager {
     }
 
     /**
-     * Determines if there is a next page available based on the current page and pagination type.
+     * Checks if there is a next page available.
      *
-     * @return true if there is a next page, otherwise false
+     * @return {@code true} if there is a next page; {@code false} otherwise.
      */
     public boolean hasNextPage() {
         return endless != EndlessType.NONE || page < getTotalPages();
     }
 
     /**
-     * Determines if there is a previous page available based on the current page and pagination type.
+     * Checks if there is a previous page available.
      *
-     * @return true if there is a previous page, otherwise false
+     * @return {@code true} if there is a previous page; {@code false} otherwise.
      */
     public boolean hasPreviousPage() {
         return endless != EndlessType.NONE || page > 0;
     }
 
     /**
-     * Updates the items on the current page based on the page index and step size.
+     * Updates the current page items based on the current page number and step size.
+     * This method refreshes the items displayed in the GUI.
      */
     public void updatePage() {
-
-        if (pageItems.isEmpty()) return; // Avoid ArithmeticException: / by zero
+        if (pageItems.isEmpty()) return;
 
         int start = (getPage() * getStep()) % pageItems.size();
         int end = Math.min(pageItems.size(), start + getPageSize());
-
-//        System.out.println("rendering: " + page);
 
         if (endless != EndlessType.NONE) {
             currentPageItems = new ArrayList<>(pageItems.subList(start, end));
 
             if (endless == EndlessType.TRULY_ENDLESS && currentPageItems.size() != getPageSize()) {
                 int dItem = getPageSize() - currentPageItems.size();
-//                System.out.println("total Items: " + pageItems.size() + " currentPageItems: " + currentPageItems.size() + " delta:" + dItem);
-
                 currentPageItems.addAll(pageItems.subList(0, dItem));
             }
+
             currentPageItems = Collections.unmodifiableList(currentPageItems);
         } else {
             currentPageItems = Collections.unmodifiableList(pageItems.subList(start, end));
@@ -133,9 +148,9 @@ public class Pager {
     }
 
     /**
-     * Adds a single item to the pager and optionally reloads the page if needed.
+     * Adds a single {@link MenuItem} to the pager and updates the page if necessary.
      *
-     * @param item the MenuItem to add
+     * @param item The {@link MenuItem} to add.
      */
     public void add(MenuItem item) {
         boolean shouldReload = pageItems.isEmpty() || pageItems.size() < (((getPage() * getStep()) % pageItems.size()) + getPageSize());
@@ -144,9 +159,9 @@ public class Pager {
     }
 
     /**
-     * Adds multiple items to the pager and optionally reloads the page if needed.
+     * Adds multiple {@link MenuItem} instances to the pager and updates the page if necessary.
      *
-     * @param items an array of MenuItems to add
+     * @param items The array of {@link MenuItem} to add.
      */
     public void add(MenuItem... items) {
         boolean shouldReload = pageItems.isEmpty() || pageItems.size() < (((getPage() * getStep()) % pageItems.size()) + getPageSize());
@@ -155,9 +170,9 @@ public class Pager {
     }
 
     /**
-     * Adds a list of items to the pager and optionally reloads the page if needed.
+     * Adds a list of {@link MenuItem} instances to the pager and updates the page if necessary.
      *
-     * @param items a list of MenuItems to add
+     * @param items The list of {@link MenuItem} to add.
      */
     public void add(List<MenuItem> items) {
         boolean shouldReload = pageItems.isEmpty() || pageItems.size() < (((getPage() * getStep()) % pageItems.size()) + getPageSize());
@@ -166,54 +181,54 @@ public class Pager {
     }
 
     /**
-     * Adds an item to the pager without reloading the current page.
+     * Adds a {@link MenuItem} to the pager without triggering an update.
      *
-     * @param item the MenuItem to add
+     * @param item The {@link MenuItem} to add.
      */
     public void quietlyAdd(MenuItem item) {
         pageItems.add(item);
     }
 
     /**
-     * Adds multiple items to the pager without reloading the current page.
+     * Adds multiple {@link MenuItem} instances to the pager without triggering an update.
      *
-     * @param items an array of MenuItems to add
+     * @param items The array of {@link MenuItem} to add.
      */
     public void quietlyAdd(MenuItem... items) {
         pageItems.addAll(List.of(items));
     }
 
     /**
-     * Adds a list of items to the pager without reloading the current page.
+     * Adds a list of {@link MenuItem} instances to the pager without triggering an update.
      *
-     * @param items a list of MenuItems to add
+     * @param items The list of {@link MenuItem} to add.
      */
     public void quietlyAdd(List<MenuItem> items) {
         pageItems.addAll(items);
     }
 
     /**
-     * Removes a specified item from the pager.
+     * Removes a specific {@link MenuItem} from the pager.
      *
-     * @param item the MenuItem to remove
+     * @param item The {@link MenuItem} to remove.
      */
     public void remove(MenuItem item) {
         removeItemIfMatch(item);
     }
 
     /**
-     * Removes a specified item from the pager by its ItemStack.
+     * Removes a specific {@link ItemStack} from the pager.
      *
-     * @param item the ItemStack to remove
+     * @param item The {@link ItemStack} to remove.
      */
     public void remove(ItemStack item) {
         removeItemIfMatch(item);
     }
 
     /**
-     * Clears all items in the pager and optionally updates the current page.
+     * Clears all items from the pager.
      *
-     * @param update whether to update the current page after clearing items
+     * @param update If {@code true}, updates the page after clearing the items.
      */
     public void clear(boolean update) {
         pageItems.clear();
@@ -221,9 +236,9 @@ public class Pager {
     }
 
     /**
-     * Advances to the next page if one exists.
+     * Advances to the next page if available.
      *
-     * @return true if the page was advanced, otherwise false
+     * @return {@code true} if the next page was successfully navigated to; {@code false} otherwise.
      */
     public boolean next() {
         if (!hasNextPage()) return false;
@@ -233,27 +248,36 @@ public class Pager {
     }
 
     /**
-     * Moves to the previous page if one exists.
+     * Goes back to the previous page if available.
      *
-     * @return true if the page was moved back, otherwise false
+     * @return {@code true} if the previous page was successfully navigated to; {@code false} otherwise.
      */
     public boolean previous() {
         if (!hasPreviousPage()) return false;
-        page = endless != EndlessType.NONE ? ((getPage() - 1) < 0 ? (endless == EndlessType.TRULY_ENDLESS ? getTotalPages() - 1 : getTotalPages()) : (getPage() - 1)) : page - 1;
+
+        page = endless != EndlessType.NONE
+                ? ((getPage() - 1) < 0
+                ? (endless == EndlessType.TRULY_ENDLESS ? getTotalPages() - 1 : getTotalPages())
+                : (getPage() - 1))
+                : page - 1;
+
         updatePage();
         return true;
     }
 
     /**
-     * Removes an item if it matches the specified item or ItemStack.
+     * Removes a specific item if it matches the given object.
      *
-     * @param item the item or ItemStack to match and remove
+     * @param item The object to match against the items in the pager.
      */
     private void removeItemIfMatch(Object item) {
         final int end = (page + 1) * getPageSize();
+
         for (int i = pageItems.size() - 1; i >= 0; i--) {
             final MenuItem current = pageItems.get(i);
+
             if (!current.equals(item)) continue;
+
             pageItems.remove(i);
             if (i <= end) updatePage();
             return;
@@ -261,7 +285,7 @@ public class Pager {
     }
 
     /**
-     * Represents the different types of endless pagination modes.
+     * The {@code EndlessType} enum defines the different modes of pagination for the pager.
      */
     public enum EndlessType {
         NONE,
