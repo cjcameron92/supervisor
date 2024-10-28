@@ -27,7 +27,7 @@ public class Decorator {
      */
     public void decorate(String... lines) {
         schema.clear();
-        schema.addAll(List.of(Arrays.copyOfRange(lines, 0, gui.getRows())));
+        schema.addAll(List.of(Arrays.copyOfRange(lines, 0, Math.min(lines.length, gui.getRows()))));
 
         schemaSlots.clear();
         schemaSlots.putAll(getSchemaSlots());
