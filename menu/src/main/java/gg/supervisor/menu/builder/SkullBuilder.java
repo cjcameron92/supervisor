@@ -25,7 +25,7 @@ public class SkullBuilder extends ItemBuilder {
         return this;
     }
 
-    public SkullBuilder getTexture(String texture) {
+    public SkullBuilder setTexture(String texture) {
         PlayerProfile profile = Bukkit.createProfile(UUID.randomUUID());
 
         profile.setProperty(new ProfileProperty("textures", texture));
