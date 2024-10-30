@@ -20,6 +20,7 @@ public class Decorator {
     private final Map<Character, List<Integer>> schemaSlots = new HashMap<>();
     private final List<String> schema = new ArrayList<>();
 
+
     /**
      * Initializes the decorator schema with lines representing item layouts for the GUI.
      *
@@ -31,6 +32,16 @@ public class Decorator {
 
         schemaSlots.clear();
         schemaSlots.putAll(getSchemaSlots());
+    }
+
+    /**
+     * Sets the specified character to be associated with the given list of slots in the schema.
+     *
+     * @param character the character key to associate with the slots
+     * @param slots the list of slot indices to be associated with the character key
+     */
+    public void setCharSlot(char character, List<Integer> slots) {
+        schemaSlots.put(character, slots);
     }
 
     /**
