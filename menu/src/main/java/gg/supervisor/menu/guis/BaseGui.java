@@ -120,20 +120,22 @@ public abstract class BaseGui implements InventoryHolder {
         return title;
     }
 
-    /**
-     * Opens a GUI for the specified player.
-     *
-     * @param player the HumanEntity for whom the GUI will be opened
-     */
-    protected void open(@NotNull final HumanEntity player) {
+    protected void open(@NotNull final HumanEntity player, boolean delay) {
         if (player.isSleeping()) return;
 
-        inventory.clear();
-        populateGui();
-        redraw();
-        firstRedraw = false;
+        if (delay)
+            player.closeInventory();
 
-        player.openInventory(inventory);
+        if (isFirstRedraw()) {
+            populateGui();
+            redraw();
+            firstRedraw = false;
+        }
+
+        if (delay)
+            Bukkit.getScheduler().runTaskLater(plugin, () -> player.openInventory(inventory), 2);
+        else
+            player.openInventory(inventory);
     }
 
     /**
@@ -151,8 +153,10 @@ public abstract class BaseGui implements InventoryHolder {
 
         inventory = Bukkit.createInventory(this, inventory.getSize(), title);
 
+        populateGui();
+
         for (final HumanEntity player : viewers) {
-            open(player);
+            open(player, false);
         }
 
         updating = false;
@@ -436,7 +440,7 @@ public abstract class BaseGui implements InventoryHolder {
             return;
 
         Bukkit.getScheduler().runTaskLater(plugin, () -> { // Run fallback action
-            this.fallbackGui.apply(player).open(player);
+            this.fallbackGui.apply(player).open(player, true);
         }, 2L);
 
     }

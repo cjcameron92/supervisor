@@ -55,14 +55,6 @@ public class GlobalMenu extends BaseGui {
      * @param player the player for whom this GUI will be opened
      */
     public void open(@NotNull HumanEntity player) {
-        if (player.isSleeping()) return;
-
-        if (firstRedraw) {
-            populateGui();
-            redraw();
-            firstRedraw = false;
-        }
-
-        player.openInventory(getInventory());
+        super.open(player, true);
     }
 }

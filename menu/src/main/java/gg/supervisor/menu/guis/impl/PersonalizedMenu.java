@@ -71,14 +71,11 @@ public class PersonalizedMenu extends BaseGui {
      */
 
     public void open() {
-        if (player.isSleeping()) return;
-
         if (invalid)
             throw new MenuException("This menu was invalidated.");
 
         getInventory().clear();
-
-        open(player);
+        super.open(player, true);
     }
 
     @Override
