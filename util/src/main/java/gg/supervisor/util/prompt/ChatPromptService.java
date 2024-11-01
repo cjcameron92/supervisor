@@ -22,7 +22,7 @@ public class ChatPromptService implements Listener {
     public ChatPromptService() {
         this.chatScanners = new HashMap<>();
 
-        Bukkit.getPluginManager().registerEvents(this, JavaPlugin.getProvidingPlugin(getClass())); yep// ensuring the event is being registered by the correct plugin
+        Bukkit.getPluginManager().registerEvents(this, JavaPlugin.getProvidingPlugin(getClass()));// ensuring the event is being registered by the correct plugin
     }
 
     public void create(UUID uuid, double expires, Consumer<String> consumer) {
