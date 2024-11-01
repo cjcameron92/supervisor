@@ -1,224 +1,241 @@
-# Supervisor
+# Supervisor Framework
 
-[![Paper Build Status](https://img.shields.io/github/actions/workflow/status/PaperMC/Paper/build.yml?branch=master)](https://github.com/PaperMC/Paper/actions)
-[![Discord](https://img.shields.io/discord/289587909051416579.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/papermc)
-[![GitHub Sponsors](https://img.shields.io/github/sponsors/papermc?label=GitHub%20Sponsors)](https://github.com/sponsors/cjcameron92)
-
-# Supervisor Framework for Minecraft Spigot Plugins
-
-Inspired by Spring Boot, the Supervisor Framework is designed to be both expandable and modular, making it the perfect
-choice for developing robust Minecraft Spigot plugins.
+Welcome to the Supervisor Core Framework! This guide provides a hyper-detailed walkthrough on how to set up your Spigot plugin using this framework, leveraging an MVC (Model-View-Controller) design similar to Spring Boot. We will cover how to structure the project, configure build tools, and use the core components effectively for creating commands, listeners, repositories, and services.
 
 ## Table of Contents
+1. [Project Structure Overview](#project-structure-overview)
+2. [Setting Up Build Tools (Maven and Gradle)](#setting-up-build-tools)
+3. [MVC Design Pattern Overview](#mvc-design-pattern-overview)
+4. [Creating a Spigot Plugin](#creating-a-spigot-plugin)
+    - [Models](#models)
+    - [Repositories](#repositories)
+    - [Controllers and Services](#controllers-and-services)
+    - [Commands](#commands)
+    - [Event Listeners](#event-listeners)
+5. [Testing and Debugging](#testing-and-debugging)
 
-- [Downloads](#downloads)
-- [User Guide](https://github.com/cjcameron92/supervisor/wiki/User-Guide)
-- [Wiki](https://github.com/cjcameron92/supervisor/wiki)
-- [Community and Support](#community-and-support)
-- [Quick Start](#quick-start)
-    - [Maven Setup](#maven-setup)
-    - [Gradle Setup](#gradle-setup)
-        - [Groovy](#groovy)
-        - [Kotlin DSL](#kotlin-dsl)
-- [Example](#example)
+## Project Structure Overview
 
-## Downloads
+The structure of your project should follow a well-organized convention similar to a Spring Boot project. This allows for better readability, modularity, and maintainability.
 
-**Core**
+```
+project-root/
+|-- src/
+|   |-- main/
+|   |   |-- java/
+|   |   |   |-- gg/supervisor/
+|   |   |       |-- plugin/
+|   |   |       |   |-- adapter/
+|   |   |       |   |-- api/
+|   |   |       |   |-- controller/
+|   |   |       |   |-- model/
+|   |   |       |   |-- listener/
+|   |   |       |   |-- service/
+|   |   |       |   |-- repository/
+|   |   |       |   |-- util/
+|   |-- resources/
+|   |   |-- plugin.yml
+|-- build.gradle (or pom.xml)
+```
 
-[`supervisor-loader`](https://repo.world/cjcameron92/downloads/supervisor-loader.jar)
+- **model/**: Represents data entities, similar to DTOs in a Spring Boot project.
+- **repository/**: Handles persistence of models.
+- **service/**: Contains business logic.
+- **controller/**: Handles interactions between the server and services.
+- **listener/**: Contains event listeners, equivalent to event-driven controllers.
+- **util/**: Utility classes for supporting tasks.
 
-[`supervisor-bundle`](https://repo.world/cjcameron92/downloads/supervisor-bundle.jar)
-
-[`supervisor-api`](https://repo.world/cjcameron92/downloads/supervisor-api.jar)
-
-**Configuration**
-
-[`supervisor-yaml`](https://repo.world/cjcameron92/downloads/supervisor-yaml.jar)
-
-[`supervisor-json`](https://repo.world/cjcameron92/downloads/supervisor-json.jar)
-
-[`supervisor-toml`](https://repo.world/cjcameron92/downloads/supervisor-toml.jar)
-
-**Storage**
-
-[`supervisor-mongo`](https://repo.world/cjcameron92/downloads/supervisor-mongo.jar)
-
-[`supervisor-sql`](https://repo.world/cjcameron92/downloads/supervisor-sql.jar)
-
-[`supervisor-storage`](https://repo.world/cjcameron92/downloads/supervisor-storage.jar)
-
-## Community and Support
-
-- [Discord](https://discord.gg/vertmix)
-
-## Quick Start
-
-### Latest Releases
-
-- **Stable Release**: `0.0.4`
-- **Dev Release**: `0.0.5-dev`
+## Setting Up Build Tools
 
 ### Maven Setup
 
-Add the repository and dependency to your `pom.xml`:
+Add the following dependencies to your `pom.xml`:
 
 ```xml
-
-<repository>
-    <url>https://cjcameron92.repo.world</url>
-</repository>
-
-<dependency>
-<groupId>gg.supervisor</groupId>
-<artifactId>bundle</artifactId>
-<version>LATEST</version>
-</dependency>
+<dependencies>
+    <dependency>
+        <groupId>gg.supervisor</groupId>
+        <artifactId>core</artifactId>
+        <version>2.0.0</version>
+        <scope>provided</scope>
+    </dependency>
+    <!-- Add other necessary dependencies for Supervisor Core Framework -->
+</dependencies>
 ```
 
 ### Gradle Setup
 
-#### Groovy
-
-Add the repository and dependency to your `build.gradle`:
+Add the following dependencies to your `build.gradle` file:
 
 ```groovy
-maven {
-    url = "https://cjcameron92.repo.world"
+repositories {
+    maven {
+        url = "https://maven.vertmix.com/"
+    }
 }
-
-implementation("gg.supervisor:bundle:VERSION")
+dependencies {
+    implementation 'gg.supervisor:core:2.0.0'
+    // Add other necessary dependencies for Supervisor Core Framework
+}
 ```
-
-#### Kotlin DSL
-
-Add the repository and dependency to your `build.gradle.kts`:
 
 ```kts
-maven("https://cjcameron92.repo.world")
-
-implementation("gg.supervisor:bundle:VERSION")
+repositories {
+    maven("https://maven.vertmix.com/")
+}
+dependencies {
+    implementation("gg.supervisor:core:2.0.0")
+    // Add other necessary dependencies for Supervisor Core Framework
+}
 ```
 
-### Local Setup
+## MVC Design Pattern Overview
 
-```bash
-git clone https://github.com/cjcameron92/supervisor.git
-./setup.sh
-./gradlew shadowJar
-```
+The MVC pattern is a powerful way to separate concerns:
 
-## Example
+1. **Model**: Represents the data structure (e.g., player data or game entities).
+2. **View**: For a Spigot plugin, views could be commands, in-game messages, or GUIs that present data.
+3. **Controller**: Coordinates interaction between the user, the system, and the business logic.
 
+This separation helps with testability, maintainability, and scalability.
+
+## Creating a Spigot Plugin
+
+### 1. Models
+
+The model represents your data, such as information about players, in-game objects, or settings.
+
+Example model:
 ```java
-package com.cjcameron92.clearchat;
+package gg.supervisor.dummy.plugin.model;
 
-import co.aikar.commands.PaperCommandManager;
-import gg.supervisor.core.loader.SupervisorLoader;
+import org.bukkit.Location;
+
+public class Dog {
+    public String name;
+    public Location location;
+
+    public Dog(String name, Location location) {
+        this.name = name;
+        this.location = location;
+    }
+}
+```
+
+### 2. Repositories
+
+Repositories are responsible for data persistence. With the Supervisor Core Framework, you can use `JsonRepository` or `JsonPlayerRepository`.
+
+Example repository:
+```java
+package gg.supervisor.dummy.plugin.repository;
+
+import gg.supervisor.core.annotation.Component;
+import gg.supervisor.core.repository.JsonRepository;
+import gg.supervisor.dummy.plugin.model.Dog;
+
+@Component
+public interface DogRepository extends JsonRepository<Dog> {
+}
+```
+
+### 3. Controllers and Services
+
+Controllers handle requests, while services contain the business logic.
+
+Example service:
+```java
+package gg.supervisor.dummy.plugin.service;
+
+import gg.supervisor.core.annotation.Component;
+import gg.supervisor.dummy.plugin.model.Dog;
+import gg.supervisor.dummy.plugin.repository.DogRepository;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+
+@Component
+public class DogService {
+    private final DogRepository dogRepository;
+
+    public DogService(DogRepository repository) {
+        this.dogRepository = repository;
+        if (repository.values().isEmpty()) {
+            repository.save("ralph", new Dog("Ralph", new Location(Bukkit.getWorld("world"), 0, 0, 0)));
+            Bukkit.getLogger().info("Saved Ralph!");
+        }
+    }
+
+    public void listDogs() {
+        dogRepository.values().forEach(dog -> Bukkit.getLogger().info("Found a dog named " + dog.name));
+    }
+}
+```
+
+### 4. Commands
+
+Commands act as user interfaces (the "View" in MVC). Use commands to interact with your plugin.
+
+Example command:
+```java
+package gg.supervisor.dummy.plugin.command;
+
+import gg.supervisor.dummy.plugin.service.DogService;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class ClearChatPlugin extends JavaPlugin {
+@Component
+public class DogCommand implements CommandExecutor {
+    private final DogService dogService;
 
-    // Class Loader Example
+    public DogCommand(DogService dogService) {
+        this.dogService = dogService;
+    }
 
     @Override
-    public void onEnable() {
-        SupervisorLoader.register(this, new PaperCommandManager(this));
-    }
-}
-```
-
-```java
-package com.cjcameron92.clearchat.config;
-
-import gg.supervisor.core.annotation.Configuration;
-import gg.supervisor.configuration.yaml.YamlConfigService;
-
-// Configuration Example
-@Configuration(fileName = "config.yml", service = YamlConfigService.class)
-public class ClearChatConfig {
-
-    public String permissionRequired = "clearchat.use";
-    public String deniedPermissionMessage = "&cYou do not have permission to use this command.";
-    public String chatClearedMessage = "&e(!) Chat has been cleared by %player%.";
-}
-```
-
-```java
-package com.cjcameron92.clearchat.command;
-
-import co.aikar.commands.BaseCommand;
-import co.aikar.commands.PaperCommandManager;
-import co.aikar.commands.annotation.CommandAlias;
-import co.aikar.commands.annotation.Default;
-import com.cjcameron92.clearchat.config.ClearChatConfig;
-import gg.supervisor.util.chat.Text;
-import gg.supervisor.core.annotation.Component;
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-
-@Component // Class Loader Components
-@CommandAlias("clearchat:cc")
-public class ClearChatCommand extends BaseCommand {
-
-    private final ClearChatConfig clearChatConfig;
-
-    public ClearChatCommand(PaperCommandManager commandManager, ClearChatConfig clearChatConfig) {
-        commandManager.registerCommand(this);
-        this.clearChatConfig = clearChatConfig;
-    }
-
-    @Default
-    public void onChatCleared(CommandSender sender) {
-        if (!sender.hasPermission(clearChatConfig.permissionRequired)) {
-            sender.sendMessage(Text.translate(clearChatConfig.deniedPermissionMessage));
-            return;
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (command.getName().equalsIgnoreCase("listdogs")) {
+            dogService.listDogs();
+            return true;
         }
-
-        for (int i = 0; i < 50; i++)
-            Bukkit.broadcast(Text.translate("\n"));
-
-        Bukkit.broadcast(Text.translate(clearChatConfig.chatClearedMessage.replaceAll("%player%", sender.getName())));
+        return false;
     }
 }
 ```
 
+To register the command in your `JavaPlugin` class:
 ```java
-// Permission Example
-package dev.hadimhz.skyblock.entity;
-
-import gg.supervisor.util.permission.PermissionManager;
-import lombok.Getter;
-
-@Getter
-public enum Permission {
-    CHEST_ACCESS,
-    PLACE_BREAK,
-    BREAK_BLOCK,
-    FLY;
-
-
-    public static final @Getter PermissionManager<Permission> permissionManager = new PermissionManager<>(Permission.class);
-
-    public boolean has(int permissionValue) {
-        return permissionManager.hasPermission(permissionValue, this);
-    }
-
+@Override
+public void onEnable() {
+    SuperviserLoader.register(this);
 }
-
 ```
 
-## Support and Contributions
+### 5. Event Listeners
 
-For support, join our Discord or consult the Wiki for troubleshooting tips. Contributions to the project are always
-welcome!
+Listeners respond to events in the game, providing another way for users to interact.
 
-## Contributors
+Example listener:
+```java
+package gg.supervisor.dummy.plugin.listener;
 
-[Hadi Mafhouz](https://github.com/Hadimhz)  
-[Cameron Carvalho](https://github.com/cjcameron92)
+import gg.supervisor.dummy.plugin.service.DogService;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 
-[Vertmix](https://vertmix.com)  
-[Games](https://toprobloxgames.com)  
-[More](https://bestrobloxgames.com)  
+@Component
+public class PlayerJoinListener implements Listener {
+    private final DogService dogService;
 
+    public PlayerJoinListener(DogService dogService) {
+        this.dogService = dogService;
+    }
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        dogService.listDogs();
+    }
+}
+```
