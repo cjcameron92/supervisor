@@ -29,6 +29,6 @@ package gg.supervisor.core.repository;
  *
  * @param <T> The type of player-specific entities managed by the repository.
  */
-public interface JsonPlayerRepository<T> extends JsonRepository<T> {
+public interface JsonPlayerRepository<T> extends JsonRepository<T>, PlayerRepository<T> {
 
 }

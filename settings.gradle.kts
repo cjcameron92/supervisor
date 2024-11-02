@@ -6,3 +6,5 @@ include("yaml-configuration")
 include("util")
 
 include("dummy")
+include("toml-configuration")
+include("mongo-repository")

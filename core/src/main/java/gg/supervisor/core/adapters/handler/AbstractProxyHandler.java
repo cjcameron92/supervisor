@@ -1,6 +1,6 @@
 package gg.supervisor.core.adapters.handler;
 
-import gg.supervisor.core.store.Store;
+import gg.supervisor.core.repository.store.Store;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;

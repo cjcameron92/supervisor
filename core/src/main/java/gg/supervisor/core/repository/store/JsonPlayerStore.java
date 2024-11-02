@@ -1,4 +1,4 @@
-package gg.supervisor.core.store;
+package gg.supervisor.core.repository.store;
 
 import java.io.File;
 import java.io.FileReader;

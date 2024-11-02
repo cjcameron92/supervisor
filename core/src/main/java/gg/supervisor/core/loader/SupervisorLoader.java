@@ -12,12 +12,13 @@ import gg.supervisor.core.adapters.types.world.WorldTypeAdapter;
 import gg.supervisor.core.annotation.*;
 import gg.supervisor.core.config.ConfigService;
 import gg.supervisor.core.repository.JsonPlayerRepository;
+import gg.supervisor.core.repository.PlayerRepository;
 import gg.supervisor.core.repository.Repository;
-import gg.supervisor.core.repository.json.JsonProxyHandler;
+import gg.supervisor.core.repository.json.SimpleProxyHandler;
 import gg.supervisor.core.repository.player.PlayerRepositoryListener;
-import gg.supervisor.core.store.JsonPlayerStore;
-import gg.supervisor.core.store.JsonStore;
-import gg.supervisor.core.store.Store;
+import gg.supervisor.core.repository.store.JsonPlayerStore;
+import gg.supervisor.core.repository.store.JsonStore;
+import gg.supervisor.core.repository.store.Store;
 import gg.supervisor.core.util.Services;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -34,9 +35,8 @@ import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 
 import java.io.File;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Proxy;
+import java.lang.reflect.*;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -50,6 +50,7 @@ import java.util.stream.Collectors;
 public class SupervisorLoader {
 
     public static Gson GSON;
+    private static final List<Runnable> DISABLE = new ArrayList<>();
 
     /**
      * Registers components, repositories, and configurations for a given plugin.
@@ -62,11 +63,13 @@ public class SupervisorLoader {
             p.getDataFolder().mkdirs();
         }
 
+        // Register the plugin instance in Services
+        Services.register(plugin.getClass(), plugin);
+        Services.register(Plugin.class, plugin); // Register the Plugin class itself
+
         for (Object o : registeredObjects) {
             Services.register(o.getClass(), o);
         }
-
-        Services.register(plugin.getClass(), plugin);
 
         String pluginPackageName = plugin.getClass().getPackage().getName();
         ClassLoader pluginClassLoader = plugin.getClass().getClassLoader();
@@ -77,6 +80,10 @@ public class SupervisorLoader {
 
         GSON = createGsonWithAdapters(reflections, plugin);
         loadComponents(reflections, plugin);
+    }
+
+    public static void disable(Plugin plugin) {
+        DISABLE.forEach(Runnable::run);
     }
 
     /**
@@ -116,7 +123,7 @@ public class SupervisorLoader {
                     Constructor<?> constructor = adapterClass.getConstructor();
                     TypeAdapter<?> adapterInstance = (TypeAdapter<?>) constructor.newInstance();
                     gsonBuilder.registerTypeAdapter(getGenericType(adapterClass), adapterInstance);
-                    Bukkit.getLogger().info("Registered adatper " + adapterClass.getSimpleName().replaceAll("Class", ""));
+                    Bukkit.getLogger().info("Registered adapter " + adapterClass.getSimpleName().replaceAll("Class", ""));
                 } catch (Exception e) {
                     e.printStackTrace();
                     System.out.println("Failed to register adapter: " + adapterClass.getName());
@@ -198,42 +205,60 @@ public class SupervisorLoader {
         Class<?>[] paramTypes = constructor.getParameterTypes();
         Object[] params = new Object[paramTypes.length];
 
-        Object mainInstance = Services.getService(clazz);
-        if (mainInstance != null) {
-            return mainInstance;
-        }
-
         for (int i = 0; i < paramTypes.length; i++) {
             Class<?> paramType = paramTypes[i];
-            Object serviceInstance = Services.getService(paramType);
 
+            Object serviceInstance = Services.getService(paramType);
             if (serviceInstance != null) {
                 params[i] = serviceInstance;
+            } else if (paramType.isAssignableFrom(Plugin.class)) {
+                params[i] = plugin; // Directly provide the plugin instance
             } else if (paramType.isAnnotationPresent(Component.class)) {
                 Object paramInstance = createComponentInstance(paramType, plugin);
                 Services.register(paramType, paramInstance);
                 params[i] = paramInstance;
             } else if (paramType.isAnnotationPresent(Configuration.class)) {
-                Object paramInstance = createComponentInstance(paramType, plugin);
-                Configuration configuration = paramInstance.getClass().getAnnotation(Configuration.class);
-
-                ConfigService configService = (ConfigService) createComponentInstance(configuration.service(), plugin);
-                File configDirectory = new File(plugin.getDataFolder(), configuration.path());
-                if (!configDirectory.exists() && !configDirectory.mkdirs()) {
-                    throw new IllegalStateException("Failed to create configuration directory at: " + configDirectory.getPath());
-                }
-
-                File configFile = new File(configDirectory, configuration.fileName());
-                configService.register((Class<Object>) paramInstance.getClass(), paramInstance, configFile);
-                Bukkit.getLogger().info("Registered configuration for file " + configFile.getPath());
-                Services.register(paramType, paramInstance);
-                params[i] = paramInstance;
+                params[i] = registerConfig(paramType, plugin);
             } else {
                 throw new Exception("No component found for required type: " + paramType.getName() + " in " + clazz.getName());
             }
         }
 
         return constructor.newInstance(params);
+    }
+
+    public static Object registerConfig(Class<?> clazz, Plugin plugin) throws Exception {
+        if (!clazz.isAnnotationPresent(Configuration.class)) {
+            throw new IllegalArgumentException("Class " + clazz.getName() + " must be annotated with @Configuration");
+        }
+
+        // Get the configuration annotation and its properties
+        Configuration configuration = clazz.getAnnotation(Configuration.class);
+        File configDirectory = new File(plugin.getDataFolder(), configuration.path());
+
+        // Ensure the configuration directory exists
+        if (!configDirectory.exists() && !configDirectory.mkdirs()) {
+            throw new IllegalStateException("Failed to create configuration directory at: " + configDirectory.getPath());
+        }
+
+        // Define the configuration file
+        File configFile = new File(configDirectory, configuration.fileName());
+
+        // Create an instance of the ConfigService
+        ConfigService configService = (ConfigService) createComponentInstance(configuration.service(), plugin);
+
+        // Instantiate the configuration class
+        Constructor<?> constructor = clazz.getDeclaredConstructor();
+        constructor.setAccessible(true);
+        Object configInstance = constructor.newInstance();
+
+        // Register the configuration with the service
+        configService.register((Class<Object>) clazz, configInstance, configFile);
+        Services.register(clazz, configInstance);
+
+        // Log the registration and return the instance
+        Bukkit.getLogger().info("Registered configuration for file " + configFile.getPath());
+        return configInstance;
     }
 
     /**
@@ -268,7 +293,8 @@ public class SupervisorLoader {
      * @param plugin Plugin instance for registration.
      * @return The created repository instance.
      */
-    private static <T> Repository<T> createRepositoryInstance(Class<T> clazz, Plugin plugin) {
+    private static <T> Repository<T> createRepositoryInstance(Class<T> clazz, Plugin plugin) throws Exception {
+
         File storageFolder = new File(plugin.getDataFolder(), "storage");
         if (!storageFolder.exists() && !storageFolder.mkdirs()) {
             throw new IllegalStateException("Failed to create storage folder at: " + storageFolder.getPath());
@@ -279,14 +305,39 @@ public class SupervisorLoader {
 
         Store<T> store;
         if (JsonPlayerRepository.class.isAssignableFrom(clazz)) {
-            File playerDataDirectory = new File(storageFolder, clazz.getSimpleName() + "_playerData");
+            File playerDataDirectory = new File(storageFolder, clazz.getSimpleName());
             store = new JsonPlayerStore<>(playerDataDirectory, entityType);
+        } else if (isMongoRepository(clazz)) {
+            // Use reflection to get MongoConfig
+            Class<?> mongoConfigClass = Class.forName("gg.supervisor.repository.mongo.MongoConfig");
+            Object mongoConfig = Services.loadIfPresent(mongoConfigClass);
+
+            if (mongoConfig == null) {
+                mongoConfig = registerConfig(mongoConfigClass, plugin);
+            }
+
+            // Decide whether to use MongoStore or MongoPlayerStore
+            if (isMongoPlayerRepository(clazz)) {
+                store = createMongoStoreInstance("gg.supervisor.repository.mongo.MongoPlayerStore", mongoConfig, clazz);
+            } else {
+                store = createMongoStoreInstance("gg.supervisor.repository.mongo.MongoStore", mongoConfig, clazz);
+            }
+
+            DISABLE.add(() -> {
+                try {
+                    Method closeMethod = store.getClass().getMethod("close");
+                    closeMethod.invoke(store);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+
         } else {
             File storeFile = new File(storageFolder, clazz.getSimpleName() + ".json");
             store = new JsonStore<>(storeFile, entityType);
         }
 
-        JsonProxyHandler<T> proxyHandler = new JsonProxyHandler<>(clazz, store);
+        SimpleProxyHandler<T> proxyHandler = new SimpleProxyHandler<>(clazz, store);
         Repository<T> repository = (Repository<T>) Proxy.newProxyInstance(
                 clazz.getClassLoader(),
                 new Class<?>[]{clazz},
@@ -295,11 +346,48 @@ public class SupervisorLoader {
 
         Services.register(clazz, repository);
 
-        if (repository instanceof JsonPlayerRepository<T> jsonPlayerRepository) {
-            Bukkit.getPluginManager().registerEvents(new PlayerRepositoryListener<>(jsonPlayerRepository), plugin);
+        if (repository instanceof PlayerRepository) {
+            Bukkit.getPluginManager().registerEvents(new PlayerRepositoryListener<>((PlayerRepository<T>) repository), plugin);
             Bukkit.getLogger().info("Bounded " + repository.getClass().getSimpleName() + " with player profiles.");
         }
 
         return repository;
+    }
+
+    private static boolean isMongoRepository(Class<?> clazz) {
+        try {
+            Class<?> mongoRepositoryClass = Class.forName("gg.supervisor.repository.mongo.MongoRepository");
+            return mongoRepositoryClass.isAssignableFrom(clazz);
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+
+    private static boolean isMongoPlayerRepository(Class<?> clazz) {
+        try {
+            Class<?> mongoPlayerRepositoryClass = Class.forName("gg.supervisor.repository.MongoPlayerRepository");
+            return mongoPlayerRepositoryClass.isAssignableFrom(clazz);
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+
+    private static <T> Store<T> createMongoStoreInstance(String className, Object mongoConfig, Class<T> clazz) throws Exception {
+        Class<?> mongoStoreClass = Class.forName(className);
+        Class<?> mongoConfigClass = mongoConfig.getClass();
+
+        Constructor<?> constructor = null;
+        for (Constructor<?> c : mongoStoreClass.getConstructors()) {
+            Class<?>[] paramTypes = c.getParameterTypes();
+            if (paramTypes.length == 2 && paramTypes[0].isAssignableFrom(mongoConfigClass) && paramTypes[1] == Class.class) {
+                constructor = c;
+                break;
+            }
+        }
+        if (constructor == null) {
+            throw new NoSuchMethodException("No suitable constructor found for " + className);
+        }
+
+        return (Store<T>) constructor.newInstance(mongoConfig, clazz);
     }
 }

@@ -1,7 +1,7 @@
 package gg.supervisor.core.repository.json;
 
 import gg.supervisor.core.adapters.handler.AbstractProxyHandler;
-import gg.supervisor.core.store.Store;
+import gg.supervisor.core.repository.store.Store;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ import java.util.ArrayList;
  *
  * @param <T> The type of the entities managed by the repository.
  */
-public class JsonProxyHandler<T> extends AbstractProxyHandler<T> {
+public class SimpleProxyHandler<T> extends AbstractProxyHandler<T> {
 
     private final Store<T> store;
 
@@ -35,7 +35,7 @@ public class JsonProxyHandler<T> extends AbstractProxyHandler<T> {
      * @param serviceInterface The repository interface that this handler proxies.
      * @param store            The {@link Store} instance that provides persistence for the entities.
      */
-    public JsonProxyHandler(Class<T> serviceInterface, Store<T> store) {
+    public SimpleProxyHandler(Class<T> serviceInterface, Store<T> store) {
         super(serviceInterface, store);
         this.store = store;
     }
