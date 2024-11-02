@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 public class SimpleMenu extends PersonalizedMenu {
 
     public SimpleMenu(Player player) {
-        super(3, Text.translate("&aSimple"), InteractionModifier.VALUES, player);
+        super(player, 3, Text.translate("&aSimple"), InteractionModifier.VALUES);
     }
 
     @Override

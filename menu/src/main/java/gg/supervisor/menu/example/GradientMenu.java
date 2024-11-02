@@ -19,7 +19,7 @@ public class GradientMenu extends PersonalizedMenu {
 
 
     public GradientMenu(Plugin plugin, Player player) {
-        super(6, Text.translate("&cGRADIENT!"), InteractionModifier.VALUES, player);
+        super(player, 6, Text.translate("&cGRADIENT!"), InteractionModifier.VALUES);
 
         final List<MenuItem> gradient = Stream.of(
                 Material.WHITE_STAINED_GLASS_PANE,

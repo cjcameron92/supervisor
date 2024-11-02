@@ -2,6 +2,7 @@ package gg.supervisor.menu.example;
 
 import gg.supervisor.menu.entities.InteractionModifier;
 import gg.supervisor.menu.guis.Pager;
+import gg.supervisor.menu.guis.builder.SchemaBuilder;
 import gg.supervisor.menu.guis.impl.PersonalizedMenu;
 import gg.supervisor.menu.item.MenuItem;
 import gg.supervisor.util.chat.Text;
@@ -18,7 +19,7 @@ public class BlocksMenu extends PersonalizedMenu {
     private static final List<MenuItem> gradient;
 
     static {
-        gradient = Stream.of(Material.values()).filter(Material::isItem).map(x-> new MenuItem(x,event -> {
+        gradient = Stream.of(Material.values()).filter(Material::isItem).map(x -> new MenuItem(x, event -> {
             event.getWhoClicked().closeInventory();
         })).toList();
     }
@@ -26,15 +27,12 @@ public class BlocksMenu extends PersonalizedMenu {
     private final BukkitTask task;
 
     public BlocksMenu(Plugin plugin, Player player) {
-        super(6, Text.translate(""), InteractionModifier.VALUES, player);
+        super(player, 6, Text.translate(""), InteractionModifier.VALUES);
 
         getDecorator().decorate(
-                "xxxxxxxxx",
-                "xxxxxxxxx",
-                "xxxxxxxxx",
-                "xxxxxxxxx",
-                "xxxxxxxxx",
-                "xxxxxxxxx"
+                new SchemaBuilder()
+                        .add("xxxxxxxxx", 6)
+                        .build()
         );
 
         final Pager first = new Pager(this, 'x').step(100).endless(Pager.EndlessType.SIMPLE);
