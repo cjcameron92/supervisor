@@ -18,7 +18,7 @@ public class Pager {
     private final @NonNull BaseGui gui;
     private final char decoratorChar;
 
-    private @Getter final List<MenuItem> pageItems = new ArrayList<>();
+    private final List<MenuItem> pageItems = new ArrayList<>();
     private @Getter List<MenuItem> currentPageItems = new ArrayList<>();
 
     private @Getter int step;
