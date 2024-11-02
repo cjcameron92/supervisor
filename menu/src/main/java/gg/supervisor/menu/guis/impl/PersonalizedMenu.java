@@ -51,7 +51,37 @@ public class PersonalizedMenu extends BaseGui {
      * @param title                the title displayed on the GUI
      * @param interactionModifiers the set of interaction modifiers defining how the player can interact with this menu
      */
+    @Deprecated
     public PersonalizedMenu(int rows, @NotNull Component title, @NotNull Set<InteractionModifier> interactionModifiers, Player player) {
+        super(rows, title, interactionModifiers);
+
+        this.player = player;
+    }
+
+    /**
+     * Constructs a PersonalizedMenu instance with a specified GUI type, title, and interaction modifiers.
+     * This menu is designed to be customized based on the assigned player.
+     *
+     * @param guiType              the type of GUI represented by this menu
+     * @param title                the title displayed on the GUI
+     * @param interactionModifiers the set of interaction modifiers defining how the player can interact with this menu
+     */
+    @Deprecated
+    public PersonalizedMenu(Player player, @NotNull GuiType guiType, @NotNull Component title, @NotNull Set<InteractionModifier> interactionModifiers) {
+        super(guiType, title, interactionModifiers);
+
+        this.player = player;
+    }
+
+    /**
+     * Constructs a PersonalizedMenu instance with a specified number of rows, title, and interaction modifiers.
+     * This menu is designed to be customized based on the assigned player.
+     *
+     * @param rows                 the number of rows in the GUI
+     * @param title                the title displayed on the GUI
+     * @param interactionModifiers the set of interaction modifiers defining how the player can interact with this menu
+     */
+    public PersonalizedMenu(Player player, int rows, @NotNull Component title, @NotNull Set<InteractionModifier> interactionModifiers) {
         super(rows, title, interactionModifiers);
 
         this.player = player;
