@@ -1,6 +1,7 @@
 package gg.supervisor.core.repository.player;
 
 import gg.supervisor.core.repository.JsonPlayerRepository;
+import gg.supervisor.core.repository.PlayerRepository;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
@@ -10,9 +11,9 @@ import org.bukkit.Bukkit;
 
 public class PlayerRepositoryListener<T> implements Listener {
 
-    private final JsonPlayerRepository<T> playerRepository;
+    private final PlayerRepository<T> playerRepository;
 
-    public PlayerRepositoryListener(JsonPlayerRepository<T> playerRepository) {
+    public PlayerRepositoryListener(PlayerRepository<T> playerRepository) {
         this.playerRepository = playerRepository;
     }
 

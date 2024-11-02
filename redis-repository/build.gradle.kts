@@ -1,6 +1,5 @@
 plugins {
     java
-
 }
 
 repositories {
@@ -8,11 +7,9 @@ repositories {
 }
 
 dependencies {
-    implementation("org.reflections:reflections:0.10.2")
-//    compileOnly(project(":mongo-repository"))
+    implementation(project(":core"))
 }
 
 tasks.shadowJar {
     minimize()
 }
-
