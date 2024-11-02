@@ -105,7 +105,7 @@ public class SupervisorLoader {
 
                 @SuppressWarnings("unchecked")
                 Class<Object> paramClass = (Class<Object>) paramInstance.getClass();
-                configService.register(paramClass, paramInstance, new File(plugin.getDataFolder(), configuration.fileName()));
+                configService.register(paramClass, paramInstance, new File(plugin.getDataFolder(), "/" + configuration.path() + "/" + configuration.fileName()));
 
                 Bukkit.getLogger().info("Registered configuration for file " + configuration.fileName());
                 Services.register(paramType, paramInstance);
