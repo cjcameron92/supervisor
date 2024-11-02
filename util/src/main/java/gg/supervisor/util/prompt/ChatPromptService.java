@@ -3,9 +3,11 @@ package gg.supervisor.util.prompt;
 import gg.supervisor.core.annotation.Component;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.TextComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +21,8 @@ public class ChatPromptService implements Listener {
 
     public ChatPromptService() {
         this.chatScanners = new HashMap<>();
+
+        Bukkit.getPluginManager().registerEvents(this, JavaPlugin.getProvidingPlugin(getClass()));// ensuring the event is being registered by the correct plugin
     }
 
     public void create(UUID uuid, double expires, Consumer<String> consumer) {
