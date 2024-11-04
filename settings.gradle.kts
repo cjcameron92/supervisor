@@ -4,8 +4,6 @@ include("core")
 include("configuration")
 include("yaml-configuration")
 include("util")
-
-include("dummy")
 include("toml-configuration")
 include("mongo-repository")
 include("itemstack-repository")
