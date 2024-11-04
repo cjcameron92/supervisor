@@ -2,6 +2,8 @@ plugins {
     java
 }
 
+version = "1.0.0"
+
 repositories {
     mavenCentral()
 }
@@ -14,4 +16,10 @@ dependencies {
 
 tasks.shadowJar {
     minimize()
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17)) // Adjust this to your desired Java version
+    }
 }

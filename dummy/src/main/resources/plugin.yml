@@ -1,4 +1,0 @@
-main: gg.supervisor.dummy.plugin.DummyPlugin
-version: 1.0
-name: DummyProject
-author: cjcameron92

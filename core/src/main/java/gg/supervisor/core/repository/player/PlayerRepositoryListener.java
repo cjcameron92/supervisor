@@ -1,6 +1,5 @@
 package gg.supervisor.core.repository.player;
 
-import gg.supervisor.core.repository.JsonPlayerRepository;
 import gg.supervisor.core.repository.PlayerRepository;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
