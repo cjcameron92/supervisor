@@ -19,8 +19,8 @@ import java.util.logging.Logger;
 
 public abstract class AbstractConfigService implements ConfigService {
 
-    protected final Map<Class<?>, Object> loadedConfigs = new ConcurrentHashMap<>();
     private static final Logger LOGGER = Logger.getLogger(AbstractConfigService.class.getName());
+    protected final Map<Class<?>, Object> loadedConfigs = new ConcurrentHashMap<>();
 
     public AbstractConfigService() {
     }
@@ -33,6 +33,7 @@ public abstract class AbstractConfigService implements ConfigService {
     public <Type> Type register(Class<Type> clazz, Type instance, File file) {
         if (!file.exists()) {
             try {
+                Files.createDirectories(file.getParentFile().toPath());
                 Files.createFile(file.toPath());
             } catch (IOException e) {
                 LOGGER.log(Level.SEVERE, "Error creating file: " + file.getPath(), e);
