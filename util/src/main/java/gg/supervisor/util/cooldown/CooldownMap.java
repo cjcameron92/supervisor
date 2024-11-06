@@ -2,6 +2,11 @@ package gg.supervisor.util.cooldown;
 
 import java.util.HashMap;
 
+/**
+ * CooldownMap class extends HashMap to manage cooldowns for specific identifiers.
+ *
+ * @param <T> the type of identifier used in the map
+ */
 public class CooldownMap<T> extends HashMap<T, Long> {
 
     /**
