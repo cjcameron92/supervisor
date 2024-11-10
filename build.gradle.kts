@@ -4,7 +4,7 @@ plugins {
     `maven-publish`
 }
 
-group = "gg.llamas.supervisor"
+group = "gg.supervisor"
 version = "1.0"
 
 

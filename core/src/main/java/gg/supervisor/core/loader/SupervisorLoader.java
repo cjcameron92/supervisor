@@ -218,6 +218,8 @@ public class SupervisorLoader {
             return null;
         }
 
+        System.out.println(clazz);
+
         Constructor<?>[] constructors = clazz.getConstructors();
         if (constructors.length == 0) {
             throw new IllegalStateException("No public constructors found for class: " + clazz.getName());
