@@ -65,7 +65,7 @@ public class Text {
 
     private static String replacePrimitiveWithMiniMessage(String string) {
         return PATTERN.matcher(string).replaceAll(matchResult ->
-                zMatcher.quoteReplacement(matchResult.group(1) + COLOR_CODES.get(matchResult.group(2))));
+                Matcher.quoteReplacement(matchResult.group(1) + COLOR_CODES.get(matchResult.group(2))));
     }
 
 
