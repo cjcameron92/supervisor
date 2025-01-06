@@ -6,6 +6,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Text {
@@ -63,7 +64,8 @@ public class Text {
     }
 
     private static String replacePrimitiveWithMiniMessage(String string) {
-        return PATTERN.matcher(string).replaceAll(matchResult -> matchResult.group(1) + COLOR_CODES.get(matchResult.group(2)));
+        return PATTERN.matcher(string).replaceAll(matchResult ->
+                zMatcher.quoteReplacement(matchResult.group(1) + COLOR_CODES.get(matchResult.group(2))));
     }
 
 
