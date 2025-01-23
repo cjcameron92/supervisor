@@ -38,7 +38,7 @@ public class Decorator {
      * Sets the specified character to be associated with the given list of slots in the schema.
      *
      * @param character the character key to associate with the slots
-     * @param slots the list of slot indices to be associated with the character key
+     * @param slots     the list of slot indices to be associated with the character key
      */
     public void setCharSlot(char character, List<Integer> slots) {
         schemaSlots.put(character, slots);
@@ -173,7 +173,18 @@ public class Decorator {
         if (schema.isEmpty())
             throw new MenuException("You must decorate this first!");
 
-        return schemaSlots.getOrDefault(key, new ArrayList<>()).stream().findFirst().orElse(-1);
+        for (Integer slot : getSlots(key)) {
+
+            if (slot > gui.getInventory().getSize() - 1)
+                break;
+
+            if (gui.getMenuItem(slot) != null || gui.getSlotAction(slot) != null)
+                continue;
+
+            return slot;
+        }
+
+        return -1;
     }
 
     /**
