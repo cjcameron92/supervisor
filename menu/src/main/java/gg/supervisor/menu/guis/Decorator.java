@@ -117,7 +117,6 @@ public class Decorator {
     public void remove(char key) {
         forEach(key, gui::removeItem);
     }
-
     /**
      * Applies a specified action to all slots associated with a given character key in the schema.
      *

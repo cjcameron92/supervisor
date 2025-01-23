@@ -9,7 +9,10 @@ import gg.supervisor.core.adapters.types.world.BlockTypeAdapter;
 import gg.supervisor.core.adapters.types.world.ChunkTypeAdapter;
 import gg.supervisor.core.adapters.types.world.LocationTypeAdapter;
 import gg.supervisor.core.adapters.types.world.WorldTypeAdapter;
-import gg.supervisor.core.annotation.*;
+import gg.supervisor.core.annotation.Adapter;
+import gg.supervisor.core.annotation.Component;
+import gg.supervisor.core.annotation.ComponentConstructor;
+import gg.supervisor.core.annotation.Configuration;
 import gg.supervisor.core.config.ConfigService;
 import gg.supervisor.core.repository.JsonPlayerRepository;
 import gg.supervisor.core.repository.PlayerRepository;
@@ -35,18 +38,20 @@ import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 
 import java.io.File;
-import java.lang.reflect.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class SupervisorLoader {
 
-    public static Gson GSON;
     private static final List<Runnable> DISABLE = new ArrayList<>();
+    public static Gson GSON;
 
     public static void register(Object plugin, Object... registeredObjects) {
         if (plugin instanceof Plugin p) {
@@ -153,6 +158,10 @@ public class SupervisorLoader {
     }
 
     private static Object createComponentInstance(Class<?> clazz, Plugin plugin) throws Exception {
+
+        if (Services.getService(clazz) != null)
+            return Services.getService(clazz);
+
         Constructor<?> constructor = getComponentConstructor(clazz);
 
         if (constructor == null) {
@@ -164,7 +173,6 @@ public class SupervisorLoader {
 
         Class<?>[] paramTypes = constructor.getParameterTypes();
         Object[] params = new Object[paramTypes.length];
-
         for (int i = 0; i < paramTypes.length; i++) {
             Class<?> paramType = paramTypes[i];
 
