@@ -1,5 +1,6 @@
 package gg.supervisor.menu.builder;
 
+import gg.supervisor.menu.action.AdvancedGuiAction;
 import gg.supervisor.menu.action.GuiAction;
 import gg.supervisor.menu.item.MenuItem;
 import gg.supervisor.util.chat.Text;
@@ -88,12 +89,23 @@ public class ItemBuilder {
     }
 
     public ItemBuilder replaceLore(Function<String, String> replace) {
-        if (this.itemMeta.lore() == null)
+        if (!itemMeta.hasLore())
             return this;
 
         final List<String> oldLore = Text.translateToMiniMessage(Objects.requireNonNull(this.itemMeta.lore()));
 
         itemMeta.lore(Text.translate(oldLore.stream().map(replace).toList()));
+
+        return this;
+    }
+
+    public ItemBuilder replace(Function<String, String> replace) {
+
+        if (itemMeta.hasDisplayName())
+            itemMeta.displayName(Text.translate(replace.apply(Text.translateToMiniMessage(item.displayName()))));
+
+        if (itemMeta.hasLore())
+            replaceLore(replace);
 
         return this;
     }
@@ -154,6 +166,14 @@ public class ItemBuilder {
     }
 
     public MenuItem menuItem(Function<String, String> replace, Consumer<ItemStack> consumer, GuiAction<InventoryClickEvent> action) {
+        return new MenuItem(build(replace, consumer), action);
+    }
+
+    public MenuItem menuItem(Function<String, String> replace, AdvancedGuiAction<InventoryClickEvent> action) {
+        return new MenuItem(build(replace), action);
+    }
+
+    public MenuItem menuItem(Function<String, String> replace, Consumer<ItemStack> consumer, AdvancedGuiAction<InventoryClickEvent> action) {
         return new MenuItem(build(replace, consumer), action);
     }
 

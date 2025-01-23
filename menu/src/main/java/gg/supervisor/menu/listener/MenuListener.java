@@ -62,8 +62,7 @@ public class MenuListener implements Listener {
 
         if (!isMenuItem(event.getCurrentItem(), menuItem)) return;
 
-        final GuiAction<InventoryClickEvent> itemAction = menuItem.getAction();
-        if (itemAction != null) itemAction.run(event);
+        menuItem.run(event);
     }
 
     @EventHandler
