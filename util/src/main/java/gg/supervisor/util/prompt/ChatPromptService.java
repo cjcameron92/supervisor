@@ -107,10 +107,10 @@ public class ChatPromptService implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     private void onLeave(PlayerQuitEvent event) {
 
-        final ChatScanner chatScanner = chatScanners.get(event.getPlayer().getUniqueId());
-        chatScanner.cancel();
-
-        chatScanners.remove(event.getPlayer().getUniqueId());
+        Optional.ofNullable(chatScanners.get(event.getPlayer().getUniqueId())).ifPresent(chatScanner -> {
+            chatScanner.cancel();
+            chatScanners.remove(event.getPlayer().getUniqueId());
+        });
 
     }
 
