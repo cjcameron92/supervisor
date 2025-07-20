@@ -14,10 +14,10 @@ public class CooldownMap<T> extends HashMap<T, Long> {
      *
      * @return the timed passed in seconds
      */
-    public long getElapsed(T t) {
+    public double getElapsed(T t) {
         if (!containsKey(t)) return -1;
 
-        return (long) (System.currentTimeMillis() / 1000d - (get(t) / 1000d));
+        return System.currentTimeMillis() / 1000d - (get(t) / 1000d);
     }
 
     /**
@@ -29,7 +29,7 @@ public class CooldownMap<T> extends HashMap<T, Long> {
      *
      * @return false if the player is not on cooldown true if the player is on cooldown
      */
-    public boolean testCooldown(T t, long seconds, boolean silent) {
+    public boolean testCooldown(T t, double seconds, boolean silent) {
         if (!containsKey(t) || getElapsed(t) >= seconds) {
             if (!silent) triggerCooldown(t);
 
@@ -46,8 +46,8 @@ public class CooldownMap<T> extends HashMap<T, Long> {
      * @param seconds the amount to check in seconds.
      * @return false if the player is not on cooldown true if the player is on cooldown
      */
-    public boolean testCooldown(T t, long seconds) {
-        return testCooldown(t, seconds, true);
+    public boolean testCooldown(T t, double seconds) {
+        return testCooldown(t, seconds, false);
     }
 
     public void triggerCooldown(T t) {
