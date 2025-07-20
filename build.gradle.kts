@@ -1,6 +1,6 @@
 plugins {
     java
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("com.gradleup.shadow") version "8.3.5"
     `maven-publish`
 }
 
@@ -27,18 +27,18 @@ allprojects {
 
 subprojects {
     apply(plugin = "java")
-    apply(plugin = "com.github.johnrengelman.shadow")
+    apply(plugin = "com.gradleup.shadow")
     apply(plugin = "maven-publish")
 
     version = "1.0.2"
 
     dependencies {
-        compileOnly("io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT")
+        compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
     }
 
     java {
         toolchain {
-            languageVersion.set(JavaLanguageVersion.of(17))
+            languageVersion.set(JavaLanguageVersion.of(21))
         }
     }
 
@@ -76,6 +76,6 @@ subprojects {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17)) // Adjust this to your desired Java version
+        languageVersion.set(JavaLanguageVersion.of(21)) // Adjust this to your desired Java version
     }
 }
