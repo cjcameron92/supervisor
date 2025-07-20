@@ -2,33 +2,31 @@ package gg.supervisor.util.chat;
 
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class TimeUtil {
 
-    public static final int FULL_DAY_IN_SECONDS = 86400;
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("A");
+    public static final long FULL_DAY_IN_SECONDS = TimeUnit.DAYS.toSeconds(1);
 
-    public static int getLocalTimeInSeconds() {
+    public static long getLocalTimeInSeconds() {
         return LocalTime.now().toSecondOfDay();
     }
 
-    public static int getLocalTimeInSeconds(ZoneId id) {
+    public static long getLocalTimeInSeconds(ZoneId id) {
         return LocalTime.now(id).toSecondOfDay();
     }
 
-    public static int getRemainingSecondsUntil(int current, int seconds) {
+    public static long getRemainingSecondsUntil(long current, long seconds) {
         return (FULL_DAY_IN_SECONDS - current + seconds) % FULL_DAY_IN_SECONDS;
     }
 
-    public static int getRemainingSecondsUntil(int seconds) {
+    public static long getRemainingSecondsUntil(long seconds) {
         return getRemainingSecondsUntil(getLocalTimeInSeconds(), seconds);
     }
 
-    public static int getRemainingSecondsUntil(ZoneId id, int seconds) {
+    public static long getRemainingSecondsUntil(ZoneId id, long seconds) {
         return getRemainingSecondsUntil(getLocalTimeInSeconds(id), seconds);
     }
 

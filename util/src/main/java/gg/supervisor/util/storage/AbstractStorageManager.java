@@ -9,6 +9,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 
 @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -47,7 +48,20 @@ public abstract class AbstractStorageManager<K, V> {
     }
 
     public V load(File file) {
-        return configService.register(clazz, newInstanceConsumer.apply(null), file);
+
+        Optional<V> load = configService.load(clazz, file);
+
+        if (load.isPresent()) {
+            V value = load.get();
+            return value;
+        }
+
+        final V apply = newInstanceConsumer.apply(null);
+
+        if (apply != null)
+            return configService.register(clazz, apply, file);
+
+        return null;
     }
 
     public Map<K, V> loadAll() {

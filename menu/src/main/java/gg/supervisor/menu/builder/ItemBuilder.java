@@ -1,22 +1,29 @@
 package gg.supervisor.menu.builder;
 
+import gg.supervisor.menu.action.AdvancedGuiAction;
 import gg.supervisor.menu.action.GuiAction;
 import gg.supervisor.menu.item.MenuItem;
 import gg.supervisor.util.chat.Text;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class ItemBuilder {
+
     public ItemStack item;
     public ItemMeta itemMeta;
 
@@ -88,13 +95,43 @@ public class ItemBuilder {
     }
 
     public ItemBuilder replaceLore(Function<String, String> replace) {
-        if (this.itemMeta.lore() == null)
+        if (!itemMeta.hasLore())
             return this;
 
         final List<String> oldLore = Text.translateToMiniMessage(Objects.requireNonNull(this.itemMeta.lore()));
 
         itemMeta.lore(Text.translate(oldLore.stream().map(replace).toList()));
 
+        return this;
+    }
+
+    public ItemBuilder replace(Function<String, String> replace) {
+
+        if (itemMeta.hasDisplayName())
+            itemMeta.displayName(Text.translate(replace.apply(Text.translateToMiniMessage(item.displayName()))));
+
+        if (itemMeta.hasLore())
+            replaceLore(replace);
+
+        return this;
+    }
+
+    public ItemBuilder hideAttributes() {
+
+        if (!itemMeta.hasAttributeModifiers()) {
+            item.getType().getDefaultAttributeModifiers().forEach(itemMeta::addAttributeModifier);
+
+            itemMeta.addAttributeModifier(Attribute.GENERIC_LUCK, new AttributeModifier(
+                    new NamespacedKey("supervisor", UUID.randomUUID().toString()),
+                    0,
+                    AttributeModifier.Operation.ADD_NUMBER
+            ));
+        }
+
+        itemMeta.addItemFlags(
+                ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ADDITIONAL_TOOLTIP,
+                ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_STORED_ENCHANTS, ItemFlag.HIDE_DESTROYS, ItemFlag.HIDE_UNBREAKABLE
+        );
         return this;
     }
 
@@ -154,6 +191,14 @@ public class ItemBuilder {
     }
 
     public MenuItem menuItem(Function<String, String> replace, Consumer<ItemStack> consumer, GuiAction<InventoryClickEvent> action) {
+        return new MenuItem(build(replace, consumer), action);
+    }
+
+    public MenuItem menuItem(Function<String, String> replace, AdvancedGuiAction<InventoryClickEvent> action) {
+        return new MenuItem(build(replace), action);
+    }
+
+    public MenuItem menuItem(Function<String, String> replace, Consumer<ItemStack> consumer, AdvancedGuiAction<InventoryClickEvent> action) {
         return new MenuItem(build(replace, consumer), action);
     }
 
