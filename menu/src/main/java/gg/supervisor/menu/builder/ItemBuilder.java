@@ -6,18 +6,24 @@ import gg.supervisor.menu.item.MenuItem;
 import gg.supervisor.util.chat.Text;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class ItemBuilder {
+
     public ItemStack item;
     public ItemMeta itemMeta;
 
@@ -107,6 +113,25 @@ public class ItemBuilder {
         if (itemMeta.hasLore())
             replaceLore(replace);
 
+        return this;
+    }
+
+    public ItemBuilder hideAttributes() {
+
+        if (!itemMeta.hasAttributeModifiers()) {
+            item.getType().getDefaultAttributeModifiers().forEach(itemMeta::addAttributeModifier);
+
+            itemMeta.addAttributeModifier(Attribute.GENERIC_LUCK, new AttributeModifier(
+                    new NamespacedKey("supervisor", UUID.randomUUID().toString()),
+                    0,
+                    AttributeModifier.Operation.ADD_NUMBER
+            ));
+        }
+
+        itemMeta.addItemFlags(
+                ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ADDITIONAL_TOOLTIP,
+                ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_STORED_ENCHANTS, ItemFlag.HIDE_DESTROYS, ItemFlag.HIDE_UNBREAKABLE
+        );
         return this;
     }
 

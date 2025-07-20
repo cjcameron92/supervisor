@@ -25,7 +25,7 @@ import static gg.supervisor.core.loader.SupervisorLoader.GSON;
  *     <li><strong>In-Memory Caching:</strong> Frequently accessed player data is cached in memory to reduce
  *     file I/O operations and enhance performance.</li>
  *     <li><strong>Robust File Handling:</strong> Proper directory and file handling to ensure files are created,
- *     read, and deleted correctly with appropriate checks and debug statements.</li>
+ *     read, and deleted correctly with appropriate checks.</li>
  * </ul>
  *
  * @param <T> The type of player data being managed by the {@code JsonPlayerStore}.
@@ -111,8 +111,6 @@ public class JsonPlayerStore<T> implements Store<T> {
             try (FileWriter writer = new FileWriter(file)) {
                 GSON.toJson(value, writer);
             }
-            // Debug statement to verify file path and content
-            System.out.println("Saved data for key: " + key + " to file: " + file.getAbsolutePath());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -186,9 +184,6 @@ public class JsonPlayerStore<T> implements Store<T> {
                 }
             }
         }
-
-        // Debug statement to verify returned values
-        System.out.println("Returning all values: " + allValues.size() + " items");
         return allValues;
     }
 }
